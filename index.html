@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Space Pilot</title>
 
 <style>
@@ -11,362 +12,701 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html,
 body {
     margin: 0;
-    background: #050713;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #02030a;
     color: white;
     font-family: monospace;
-    overflow: hidden;
     touch-action: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameWrap {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #02030a;
 }
 
 #game {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: min(100vw, 1100px);
+    height: min(100vh, 620px);
+    aspect-ratio: 16 / 9;
     overflow: hidden;
-    background: #050713;
+    background: #02030a;
+    border: 2px solid #26314f;
 }
 
 canvas {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    display: block;
     image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
-/* Верхняя панель */
+#creator {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+
+    color: #9aff78;
+    font-size: clamp(8px, 1.5vw, 14px);
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow:
+        2px 0 #10240d,
+        -1px 0 #10240d,
+        0 2px #10240d;
+
+    pointer-events: none;
+    white-space: nowrap;
+}
 
 #hud {
     position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
+    top: 28px;
+    left: 10px;
+    right: 10px;
+    z-index: 20;
 
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
-    font-size: 15px;
+    font-size: clamp(10px, 2vw, 17px);
     font-weight: bold;
-
-    color: white;
     text-shadow: 2px 2px #000;
-
     pointer-events: none;
 }
 
-#lives {
-    color: #ff5757;
+.hudLeft,
+.hudRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Левая часть управления */
+#pauseButton {
+    pointer-events: auto;
+    border: 1px solid #7783a8;
+    background: #11172a;
+    color: white;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: clamp(10px, 2vw, 16px);
 
-#leftControls {
+    min-width: 42px;
+    min-height: 38px;
+
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#pauseButton:active {
+    transform: scale(.94);
+    background: #26314f;
+}
+
+.status {
+    display: none;
+    padding: 3px 6px;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+}
+
+#speedStatus {
+    color: #ffe44a;
+}
+
+#shieldStatus {
+    color: #62d8ff;
+}
+
+#aimStatus {
+    color: #ff76f4;
+}
+
+#controls {
     position: absolute;
-    left: 18px;
-    bottom: 25px;
-
-    display: flex;
-    gap: 10px;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
 }
 
 .controlButton {
-    width: 64px;
-    height: 64px;
+    position: absolute;
+    bottom: 14px;
 
-    border: 2px solid rgba(255,255,255,0.45);
-    border-radius: 14px;
+    width: clamp(50px, 10vw, 72px);
+    height: clamp(45px, 9vw, 64px);
 
-    background: rgba(20,30,50,0.75);
+    border: 2px solid #66749d;
+    border-radius: 7px;
+
+    background: rgba(15, 21, 40, .82);
     color: white;
 
-    font-size: 28px;
+    font-family: monospace;
+    font-size: clamp(15px, 3vw, 25px);
+    font-weight: bold;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+    pointer-events: auto;
     user-select: none;
     -webkit-user-select: none;
 }
 
 .controlButton:active {
-    background: rgba(80,100,130,0.9);
-    transform: scale(0.94);
+    background: rgba(65, 79, 125, .95);
+    transform: scale(.94);
 }
 
-/* Кнопка огня */
+#upButton {
+    left: 14px;
+}
+
+#downButton {
+    left: 14px;
+    bottom: 82px;
+}
 
 #fireButton {
-    position: absolute;
-    right: 22px;
-    bottom: 25px;
-
-    width: 85px;
-    height: 85px;
-
-    border-radius: 50%;
-
-    border: 3px solid rgba(255,255,255,0.6);
-
-    background: rgba(40,80,50,0.85);
-    color: white;
-
-    font-size: 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    user-select: none;
-    -webkit-user-select: none;
+    right: 14px;
+    width: clamp(65px, 13vw, 95px);
 }
 
-#fireButton:active {
-    transform: scale(0.9);
-    background: rgba(70,130,70,0.95);
-}
-
-/* Стартовое меню */
-
-#menu {
+#menu,
+#gameOver,
+#pauseMenu {
     position: absolute;
     inset: 0;
+    z-index: 100;
 
     display: flex;
     flex-direction: column;
-
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    background: rgba(3,5,15,0.92);
+    background:
+        radial-gradient(circle at center,
+        rgba(15, 31, 65, .82),
+        rgba(1, 3, 10, .97));
 
-    z-index: 10;
+    text-align: center;
 }
 
-#menu h1 {
-    margin: 0 0 10px;
+.hidden {
+    display: none !important;
+}
 
-    font-size: 34px;
-    color: #61ff7b;
+.title {
+    margin: 0 0 8px;
+
+    color: #9aff78;
+    font-size: clamp(27px, 7vw, 62px);
+    letter-spacing: 5px;
 
     text-shadow:
-        3px 3px #173b1c;
+        4px 0 #183515,
+        0 4px #183515;
 }
 
-#menu p {
-    margin: 5px 20px 25px;
-    text-align: center;
-    color: #b8c0d8;
-    line-height: 1.5;
+.subtitle {
+    color: #a9b4d0;
+    font-size: clamp(9px, 2vw, 15px);
+    margin-bottom: 25px;
 }
 
-#startButton {
-    padding: 15px 35px;
+.menuButton {
+    min-width: 190px;
+    min-height: 50px;
 
-    border: 2px solid #61ff7b;
-    border-radius: 10px;
+    margin: 6px;
 
-    background: #122516;
-    color: #61ff7b;
+    border: 2px solid #7180a8;
+    border-radius: 5px;
+
+    background: #10172b;
+    color: white;
 
     font-family: monospace;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: bold;
+
+    cursor: pointer;
 }
 
-#gameOver {
+.menuButton:hover {
+    background: #1b2848;
+}
+
+.menuButton:active {
+    transform: scale(.96);
+}
+
+.smallInfo {
+    margin-top: 15px;
+    max-width: 420px;
+    padding: 0 15px;
+
+    color: #7985a3;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+#gameOver h2,
+#pauseMenu h2 {
+    margin: 0 0 18px;
+
+    color: white;
+    font-size: clamp(26px, 6vw, 48px);
+    letter-spacing: 3px;
+}
+
+#finalScore {
+    color: #ffe44a;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+#pauseMenu input {
+    width: min(260px, 80vw);
+    height: 45px;
+
+    margin: 8px 0;
+
+    border: 2px solid #566382;
+    border-radius: 4px;
+
+    background: #080c18;
+    color: white;
+
+    text-align: center;
+    font-family: monospace;
+    font-size: 16px;
+
+    outline: none;
+}
+
+#pauseMenu input:focus {
+    border-color: #9aff78;
+}
+
+#cheatMessage {
+    min-height: 18px;
+    margin: 5px 0 10px;
+
+    color: #ff76f4;
+    font-size: 11px;
+}
+
+#orientation {
     display: none;
-
-    position: absolute;
+    position: fixed;
     inset: 0;
+    z-index: 999;
 
-    background: rgba(0,0,0,0.78);
-
-    z-index: 9;
+    background: #02030a;
+    color: white;
 
     align-items: center;
     justify-content: center;
-
-    flex-direction: column;
-}
-
-#gameOver h2 {
-    color: #ff6666;
-    font-size: 30px;
-}
-
-#restartButton {
-    padding: 14px 28px;
-
-    border: 2px solid white;
-    border-radius: 10px;
-
-    background: #182033;
-    color: white;
+    text-align: center;
 
     font-family: monospace;
     font-size: 18px;
+    padding: 30px;
+}
+
+@media (orientation: portrait) and (max-width: 700px) {
+    #orientation {
+        display: flex;
+    }
+
+    #gameWrap {
+        display: none;
+    }
+}
+
+@media (max-height: 430px) {
+    #creator {
+        top: 3px;
+        font-size: 8px;
+    }
+
+    #hud {
+        top: 20px;
+    }
+
+    .controlButton {
+        bottom: 7px;
+        height: 45px;
+    }
+
+    #downButton {
+        bottom: 58px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div id="game">
-
-<canvas id="canvas"></canvas>
-
-<div id="hud">
-    <div id="score">SCORE: 00000</div>
-    <div id="coins">⭐ 0</div>
-    <div id="lives">♥ ♥ ♥</div>
+<div id="orientation">
+    ↻<br><br>
+    ПОВЕРНИ ТЕЛЕФОН<br>
+    ГОРИЗОНТАЛЬНО
 </div>
 
-<div id="leftControls">
+<div id="gameWrap">
 
-    <button class="controlButton" id="upButton">
-        ▲
-    </button>
+    <div id="game">
 
-    <button class="controlButton" id="downButton">
-        ▼
-    </button>
+        <canvas id="canvas" width="480" height="270"></canvas>
 
-</div>
+        <div id="creator">
+            CREATED BY GETOGENOV
+        </div>
 
-<button id="fireButton">
-    🔫
-</button>
+        <div id="hud">
 
-<div id="menu">
+            <div class="hudLeft">
+                <span id="lives">❤️❤️❤️</span>
+                <span>🪙 <span id="score">0</span></span>
 
-    <h1>SPACE PILOT</h1>
+                <span id="speedStatus" class="status">
+                    ⚡ <span id="speedTimer">0</span>
+                </span>
 
-    <p>
-        Лети сквозь космос.<br>
-        Собирай звёздные монеты.<br>
-        Разрушай астероиды лазером!
-    </p>
+                <span id="shieldStatus" class="status">
+                    🛡️ <span id="shieldTimer">0</span>
+                </span>
 
-    <button id="startButton">
-        ▶ НАЧАТЬ
-    </button>
+                <span id="aimStatus" class="status">
+                    🎯 AIM
+                </span>
+            </div>
 
-</div>
+            <div class="hudRight">
+                <button id="pauseButton">Ⅱ</button>
+            </div>
 
-<div id="gameOver">
+        </div>
 
-    <h2>GAME OVER</h2>
+        <div id="controls">
 
-    <p id="finalScore"></p>
+            <button
+                id="upButton"
+                class="controlButton">
+                ▲
+            </button>
 
-    <button id="restartButton">
-        ↻ ЗАНОВО
-    </button>
+            <button
+                id="downButton"
+                class="controlButton">
+                ▼
+            </button>
 
-</div>
+            <button
+                id="fireButton"
+                class="controlButton">
+                🔫
+            </button>
 
+        </div>
+
+        <!-- START MENU -->
+
+        <div id="menu">
+
+            <h1 class="title">
+                SPACE PILOT
+            </h1>
+
+            <div class="subtitle">
+                PIXEL SPACE ADVENTURE
+            </div>
+
+            <button
+                id="startButton"
+                class="menuButton">
+                ▶ START
+            </button>
+
+            <div class="smallInfo">
+                ▲ ▼ — движение<br>
+                🔫 — огонь<br>
+                ⏸ — пауза<br>
+                Собирай монеты и бонусы.<br>
+                Уничтожай астероиды.
+            </div>
+
+        </div>
+
+        <!-- PAUSE -->
+
+        <div id="pauseMenu" class="hidden">
+
+            <h2>PAUSED</h2>
+
+            <button
+                id="resumeButton"
+                class="menuButton">
+                ▶ ПРОДОЛЖИТЬ
+            </button>
+
+            <button
+                id="restartPauseButton"
+                class="menuButton">
+                🔄 ЗАНОВО
+            </button>
+
+            <input
+                id="cheatInput"
+                type="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                placeholder="ВВЕДИ ЧИТ-КОД">
+
+            <button
+                id="cheatButton"
+                class="menuButton">
+                🔐 АКТИВИРОВАТЬ
+            </button>
+
+            <div id="cheatMessage"></div>
+
+            <button
+                id="menuButtonFromPause"
+                class="menuButton">
+                🏠 МЕНЮ
+            </button>
+
+        </div>
+
+        <!-- GAME OVER -->
+
+        <div id="gameOver" class="hidden">
+
+            <h2>GAME OVER</h2>
+
+            <div id="finalScore">
+                SCORE: 0
+            </div>
+
+            <button
+                id="restartButton"
+                class="menuButton">
+                🔄 RESTART
+            </button>
+
+            <button
+                id="menuButton"
+                class="menuButton">
+                🏠 MENU
+            </button>
+
+        </div>
+
+    </div>
 </div>
 
 <script>
+"use strict";
+
+/* =========================================================
+   BASIC SETUP
+========================================================= */
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let W = 320;
-let H = 180;
-
-canvas.width = W;
-canvas.height = H;
-
 ctx.imageSmoothingEnabled = false;
 
+const W = canvas.width;
+const H = canvas.height;
 
-/* =========================
-   СОСТОЯНИЕ ИГРЫ
-========================= */
+/* =========================================================
+   UI
+========================================================= */
+
+const menu = document.getElementById("menu");
+const pauseMenu = document.getElementById("pauseMenu");
+const gameOver = document.getElementById("gameOver");
+
+const startButton = document.getElementById("startButton");
+const pauseButton = document.getElementById("pauseButton");
+const resumeButton = document.getElementById("resumeButton");
+
+const restartButton = document.getElementById("restartButton");
+const restartPauseButton =
+    document.getElementById("restartPauseButton");
+
+const menuButton =
+    document.getElementById("menuButton");
+
+const menuButtonFromPause =
+    document.getElementById("menuButtonFromPause");
+
+const cheatInput =
+    document.getElementById("cheatInput");
+
+const cheatButton =
+    document.getElementById("cheatButton");
+
+const cheatMessage =
+    document.getElementById("cheatMessage");
+
+const livesElement =
+    document.getElementById("lives");
+
+const scoreElement =
+    document.getElementById("score");
+
+const finalScoreElement =
+    document.getElementById("finalScore");
+
+const speedStatus =
+    document.getElementById("speedStatus");
+
+const shieldStatus =
+    document.getElementById("shieldStatus");
+
+const aimStatus =
+    document.getElementById("aimStatus");
+
+const speedTimerElement =
+    document.getElementById("speedTimer");
+
+const shieldTimerElement =
+    document.getElementById("shieldTimer");
+
+/* =========================================================
+   GAME STATE
+========================================================= */
 
 let gameRunning = false;
+let paused = false;
 
 let score = 0;
-let coinCount = 0;
 let lives = 3;
 
-let frame = 0;
+let lastTime = 0;
+let asteroidTimer = 0;
+let coinTimer = 0;
+let powerTimer = 0;
 
-let bullets = [];
-let asteroids = [];
-let coins = [];
-let stars = [];
+let difficulty = 1;
 
+let speedBoostTimer = 0;
+let shieldTimer = 0;
 
-/* =========================
-   КОРАБЛЬ
-========================= */
+let autoAim = false;
+
+let fireCooldown = 0;
+
+let invulnerabilityTimer = 0;
+
+/* =========================================================
+   SHIP
+========================================================= */
 
 const ship = {
+    x: 70,
+    y: H / 2,
 
-    x: 42,
-    y: 90,
+    width: 38,
+    height: 24,
 
-    width: 25,
-    height: 18,
+    speed: 145,
 
-    speed: 2.8
-
+    movingUp: false,
+    movingDown: false
 };
 
+/* =========================================================
+   OBJECT ARRAYS
+========================================================= */
 
-/* =========================
-   ЗВЁЗДЫ ФОНА
-========================= */
+const stars = [];
+const asteroids = [];
+const bullets = [];
+const coins = [];
+const powerups = [];
+const particles = [];
+
+/* =========================================================
+   RANDOM HELPERS
+========================================================= */
+
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function randomInt(min, max) {
+    return Math.floor(random(min, max + 1));
+}
+
+/* =========================================================
+   STARS
+========================================================= */
 
 function createStars() {
 
-    stars = [];
+    stars.length = 0;
 
-    for(let i = 0; i < 70; i++) {
+    for (let i = 0; i < 90; i++) {
 
         stars.push({
-
-            x: Math.random() * W,
-            y: Math.random() * H,
-
-            size: Math.random() > 0.8 ? 2 : 1,
-
-            speed:
-                0.3 +
-                Math.random() * 1.1
-
+            x: random(0, W),
+            y: random(0, H),
+            size: randomInt(1, 2),
+            speed: random(8, 40),
+            brightness: random(.3, 1)
         });
-
     }
-
 }
 
+/* =========================================================
+   BACKGROUND
+========================================================= */
 
-/* =========================
-   РИСОВАНИЕ ФОНА
-========================= */
+function drawBackground(dt) {
 
-function drawBackground() {
+    ctx.fillStyle = "#02030a";
+    ctx.fillRect(0, 0, W, H);
 
-    ctx.fillStyle = "#050713";
-    ctx.fillRect(0,0,W,H);
+    for (const star of stars) {
 
-    for(const star of stars) {
+        star.x -= star.speed * dt;
 
-        star.x -= star.speed;
-
-        if(star.x < 0) {
-
+        if (star.x < 0) {
             star.x = W;
-            star.y = Math.random() * H;
-
+            star.y = random(0, H);
         }
 
-        ctx.fillStyle = "#8b9bb8";
+        const alpha =
+            Math.max(.2, star.brightness);
+
+        ctx.fillStyle =
+            `rgba(190,220,255,${alpha})`;
 
         ctx.fillRect(
             Math.floor(star.x),
@@ -374,938 +714,1532 @@ function drawBackground() {
             star.size,
             star.size
         );
-
     }
 
+    /* distant lines */
+
+    ctx.fillStyle = "rgba(50,70,110,.12)";
+
+    for (let y = 0; y < H; y += 30) {
+
+        ctx.fillRect(
+            0,
+            y,
+            W,
+            1
+        );
+    }
 }
 
-
-/* =========================
-   КОРАБЛЬ
-========================= */
+/* =========================================================
+   SHIP
+========================================================= */
 
 function drawShip() {
 
-    const x = Math.floor(ship.x);
-    const y = Math.floor(ship.y);
+    ctx.save();
 
-    /*
-       Зелёный пиксельный корабль
-       в форме треугольника
-    */
+    ctx.translate(ship.x, ship.y);
 
-    ctx.fillStyle = "#54e86a";
+    /* Shield */
+
+    if (shieldTimer > 0) {
+
+        ctx.strokeStyle = "#52d9ff";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            25,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+
+        ctx.fillStyle =
+            "rgba(70,210,255,.08)";
+
+        ctx.fill();
+    }
+
+    /* ship shadow */
+
+    ctx.fillStyle = "#071006";
+
+    ctx.fillRect(
+        -18,
+        -8,
+        36,
+        17
+    );
+
+    /* main green hull */
+
+    ctx.fillStyle = "#63d348";
 
     ctx.beginPath();
 
-    ctx.moveTo(x, y + 9);
-
-    ctx.lineTo(x + 22, y);
-
-    ctx.lineTo(x + 25, y + 9);
-
-    ctx.lineTo(x + 22, y + 18);
-
+    ctx.moveTo(22, 0);
+    ctx.lineTo(-13, -12);
+    ctx.lineTo(-20, -7);
+    ctx.lineTo(-15, 0);
+    ctx.lineTo(-20, 7);
+    ctx.lineTo(-13, 12);
     ctx.closePath();
 
     ctx.fill();
 
+    /* lighter upper section */
 
-    /* тёмная кабина */
+    ctx.fillStyle = "#a0ef65";
 
-    ctx.fillStyle = "#183d23";
+    ctx.beginPath();
+
+    ctx.moveTo(20, 0);
+    ctx.lineTo(-9, -9);
+    ctx.lineTo(-3, -2);
+    ctx.closePath();
+
+    ctx.fill();
+
+    /* cockpit */
+
+    ctx.fillStyle = "#79d9e8";
 
     ctx.fillRect(
-        x + 10,
-        y + 5,
-        8,
+        1,
+        -5,
+        9,
+        7
+    );
+
+    ctx.fillStyle = "#d4ffff";
+
+    ctx.fillRect(
+        3,
+        -4,
+        4,
+        2
+    );
+
+    /* engine */
+
+    ctx.fillStyle = "#ffb52d";
+
+    ctx.fillRect(
+        -21,
+        -4,
+        7,
         8
     );
 
-
-    /* зелёное стекло */
-
-    ctx.fillStyle = "#9affaa";
+    ctx.fillStyle = "#fff06a";
 
     ctx.fillRect(
-        x + 12,
-        y + 6,
-        5,
+        -24,
+        -2,
+        4,
         4
     );
 
-
-    /* двигатель */
-
-    ctx.fillStyle = "#ffb52e";
-
-    ctx.fillRect(
-        x - 4,
-        y + 7,
-        5,
-        4
-    );
-
+    ctx.restore();
 }
 
-
-/* =========================
-   ЛАЗЕР
-========================= */
+/* =========================================================
+   BULLETS
+========================================================= */
 
 function shoot() {
 
-    if(!gameRunning) return;
-
-    bullets.push({
-
-        x: ship.x + 23,
-
-        y: ship.y + 8,
-
-        width: 12,
-
-        height: 2,
-
-        speed: 6
-
-    });
-
-}
-
-
-function updateBullets() {
-
-    for(let i = bullets.length - 1; i >= 0; i--) {
-
-        bullets[i].x += bullets[i].speed;
-
-        if(bullets[i].x > W + 20) {
-
-            bullets.splice(i,1);
-
-        }
-
+    if (!gameRunning || paused) {
+        return;
     }
 
+    if (fireCooldown > 0) {
+        return;
+    }
+
+    let target = null;
+
+    if (autoAim) {
+        target = getNearestAsteroid();
+    }
+
+    const bullet = {
+        x: ship.x + 20,
+        y: ship.y,
+
+        speed: 300,
+
+        width: 9,
+        height: 2,
+
+        targetX: target ? target.x : null,
+        targetY: target ? target.y : null
+    };
+
+    bullets.push(bullet);
+
+    fireCooldown =
+        speedBoostTimer > 0 ? .10 : .18;
+
+    createParticles(
+        bullet.x,
+        bullet.y,
+        "#8aff55",
+        3
+    );
 }
 
+function updateBullets(dt) {
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+
+        const bullet = bullets[i];
+
+        if (autoAim && bullet.targetX !== null) {
+
+            const dx = bullet.targetX - bullet.x;
+            const dy = bullet.targetY - bullet.y;
+
+            const distance =
+                Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 1) {
+
+                const aimSpeed = 250;
+
+                bullet.x +=
+                    (dx / distance) *
+                    aimSpeed *
+                    dt;
+
+                bullet.y +=
+                    (dy / distance) *
+                    aimSpeed *
+                    dt;
+            }
+
+        } else {
+
+            bullet.x +=
+                bullet.speed * dt;
+        }
+
+        if (
+            bullet.x > W + 20 ||
+            bullet.y < -20 ||
+            bullet.y > H + 20
+        ) {
+
+            bullets.splice(i, 1);
+        }
+    }
+}
 
 function drawBullets() {
 
-    for(const bullet of bullets) {
+    for (const bullet of bullets) {
 
-        ctx.fillStyle = "#72e8ff";
+        ctx.fillStyle = "#a6ff6a";
 
         ctx.fillRect(
-            bullet.x,
-            bullet.y,
+            Math.floor(bullet.x),
+            Math.floor(bullet.y),
             bullet.width,
             bullet.height
         );
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#eaffd7";
 
         ctx.fillRect(
-            bullet.x + 4,
-            bullet.y,
-            5,
-            1
+            Math.floor(bullet.x + 2),
+            Math.floor(bullet.y),
+            4,
+            2
         );
-
     }
-
 }
 
-
-/* =========================
-   АСТЕРОИДЫ
-========================= */
+/* =========================================================
+   ASTEROIDS
+========================================================= */
 
 function createAsteroid() {
 
     const radius =
-        7 +
-        Math.random() * 7;
+        random(11, 20);
+
+    const points = randomInt(7, 10);
+
+    const vertices = [];
+
+    for (let i = 0; i < points; i++) {
+
+        const angle =
+            (Math.PI * 2 / points) * i;
+
+        const distance =
+            radius * random(.75, 1.25);
+
+        vertices.push({
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance
+        });
+    }
+
+    const craters = [];
+
+    for (let i = 0; i < randomInt(2, 4); i++) {
+
+        craters.push({
+            x: random(-radius * .5, radius * .5),
+            y: random(-radius * .5, radius * .5),
+            size: random(2, 5)
+        });
+    }
 
     asteroids.push({
 
-        x: W + radius,
+        x: W + radius + 10,
+        y: random(25, H - 25),
 
-        y:
-            15 +
-            Math.random() *
-            (H - 30),
-
-        radius: radius,
+        radius,
+        vertices,
+        craters,
 
         speed:
-            1.1 +
-            Math.random() * 1.6,
+            random(70, 105) +
+            difficulty * 10,
 
         rotation:
-            Math.random() * Math.PI * 2,
+            random(-1.5, 1.5),
 
-        rotationSpeed:
-            (Math.random() - 0.5) * 0.03,
-
-        points: 8
-
+        angle: 0
     });
-
 }
 
+function updateAsteroids(dt) {
 
-/* =========================
-   РИСОВАНИЕ АСТЕРОИДА
-========================= */
+    for (let i = asteroids.length - 1; i >= 0; i--) {
 
-function drawAsteroid(a) {
+        const asteroid = asteroids[i];
 
-    ctx.save();
+        asteroid.x -=
+            asteroid.speed * dt;
 
-    ctx.translate(a.x,a.y);
+        asteroid.angle +=
+            asteroid.rotation * dt;
 
-    ctx.rotate(a.rotation);
+        if (asteroid.x < -60) {
 
-    /*
-       Неровная форма астероида
-    */
+            asteroids.splice(i, 1);
+            continue;
+        }
 
-    ctx.beginPath();
+        if (
+            collisionCircle(
+                ship.x,
+                ship.y,
+                16,
+                asteroid.x,
+                asteroid.y,
+                asteroid.radius
+            )
+        ) {
 
-    for(let i = 0; i < a.points; i++) {
-
-        const angle =
-            Math.PI * 2 *
-            i /
-            a.points;
-
-        const variation =
-            0.72 +
-            Math.sin(i * 4.3) * 0.15 +
-            Math.random() * 0.12;
-
-        const r =
-            a.radius *
-            variation;
-
-        const px =
-            Math.cos(angle) * r;
-
-        const py =
-            Math.sin(angle) * r;
-
-        if(i === 0)
-            ctx.moveTo(px,py);
-        else
-            ctx.lineTo(px,py);
-
+            hitAsteroid(i);
+        }
     }
-
-    ctx.closePath();
-
-    ctx.fillStyle = "#777b86";
-
-    ctx.fill();
-
-
-    /*
-       тёмные края
-    */
-
-    ctx.strokeStyle = "#3e414b";
-
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-
-
-    /*
-       кратеры
-    */
-
-    ctx.fillStyle = "#494c56";
-
-    ctx.fillRect(
-        -a.radius * 0.45,
-        -a.radius * 0.2,
-        4,
-        3
-    );
-
-    ctx.fillRect(
-        a.radius * 0.15,
-        -a.radius * 0.55,
-        3,
-        3
-    );
-
-    ctx.fillRect(
-        a.radius * 0.25,
-        a.radius * 0.2,
-        4,
-        3
-    );
-
-    ctx.fillStyle = "#979aa3";
-
-    ctx.fillRect(
-        -a.radius * 0.1,
-        -a.radius * 0.45,
-        2,
-        2
-    );
-
-    ctx.restore();
-
 }
 
+function drawAsteroids() {
 
-/* =========================
-   МОНЕТЫ
-========================= */
+    for (const asteroid of asteroids) {
+
+        ctx.save();
+
+        ctx.translate(
+            Math.floor(asteroid.x),
+            Math.floor(asteroid.y)
+        );
+
+        ctx.rotate(asteroid.angle);
+
+        /* rock */
+
+        ctx.fillStyle = "#59606a";
+
+        ctx.beginPath();
+
+        for (
+            let i = 0;
+            i < asteroid.vertices.length;
+            i++
+        ) {
+
+            const p =
+                asteroid.vertices[i];
+
+            if (i === 0) {
+                ctx.moveTo(p.x, p.y);
+            } else {
+                ctx.lineTo(p.x, p.y);
+            }
+        }
+
+        ctx.closePath();
+        ctx.fill();
+
+        /* dark edge */
+
+        ctx.strokeStyle = "#303640";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        /* craters */
+
+        for (const crater of asteroid.craters) {
+
+            ctx.fillStyle = "#363b42";
+
+            ctx.fillRect(
+                Math.floor(
+                    crater.x - crater.size / 2
+                ),
+                Math.floor(
+                    crater.y - crater.size / 2
+                ),
+                Math.floor(crater.size),
+                Math.floor(crater.size)
+            );
+
+            ctx.fillStyle = "#717982";
+
+            ctx.fillRect(
+                Math.floor(
+                    crater.x - crater.size / 2
+                ),
+                Math.floor(
+                    crater.y - crater.size / 2
+                ),
+                1,
+                1
+            );
+        }
+
+        ctx.restore();
+    }
+}
+
+/* =========================================================
+   COINS
+========================================================= */
 
 function createCoin() {
 
     coins.push({
 
-        x: W + 10,
+        x: W + 15,
+        y: random(25, H - 25),
 
-        y:
-            18 +
-            Math.random() *
-            (H - 36),
+        radius: 8,
 
-        radius: 6,
+        speed: 90 + difficulty * 7,
 
-        speed: 1.7,
+        rotation: random(0, Math.PI * 2),
 
-        angle: 0,
-
-        rotationSpeed: 0.12
-
+        spin: random(4, 7)
     });
-
 }
 
+function updateCoins(dt) {
 
-/* =========================
-   РИСОВАНИЕ МОНЕТЫ
-========================= */
+    for (let i = coins.length - 1; i >= 0; i--) {
 
-function drawCoin(c) {
+        const coin = coins[i];
+
+        coin.x -=
+            coin.speed * dt;
+
+        coin.rotation +=
+            coin.spin * dt;
+
+        if (coin.x < -20) {
+
+            coins.splice(i, 1);
+            continue;
+        }
+
+        if (
+            collisionCircle(
+                ship.x,
+                ship.y,
+                15,
+                coin.x,
+                coin.y,
+                coin.radius
+            )
+        ) {
+
+            score += 10;
+
+            createParticles(
+                coin.x,
+                coin.y,
+                "#ffe44a",
+                12
+            );
+
+            coins.splice(i, 1);
+
+            updateHUD();
+        }
+    }
+}
+
+function drawCoin(coin) {
 
     ctx.save();
 
-    ctx.translate(c.x,c.y);
-
-    c.angle += c.rotationSpeed;
+    ctx.translate(
+        Math.floor(coin.x),
+        Math.floor(coin.y)
+    );
 
     /*
-       Эффект вращения:
-       ширина круга меняется
+       Симулируем вращение монеты:
+       она становится уже/шире по X.
     */
 
-    const scaleX =
-        Math.abs(Math.cos(c.angle));
+    const width =
+        Math.abs(Math.cos(coin.rotation)) *
+        coin.radius;
 
-    ctx.scale(
-        Math.max(0.2,scaleX),
-        1
+    ctx.fillStyle = "#ffd83d";
+
+    ctx.fillRect(
+        -Math.max(2, width),
+        -coin.radius,
+        Math.max(4, width * 2),
+        coin.radius * 2
     );
 
-
-    /* золотой круг */
-
-    ctx.fillStyle = "#ffd43b";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        0,
-        0,
-        c.radius,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /* край */
-
-    ctx.strokeStyle = "#b88612";
-
+    ctx.strokeStyle = "#fff18a";
     ctx.lineWidth = 1;
 
-    ctx.stroke();
+    ctx.strokeRect(
+        -Math.max(2, width),
+        -coin.radius,
+        Math.max(4, width * 2),
+        coin.radius * 2
+    );
 
+    /* star */
 
-    /*
-       Звёздочка внутри
-    */
+    ctx.fillStyle = "#fff8b0";
 
-    ctx.fillStyle = "#fff4a3";
+    const starScale =
+        Math.max(.35, width / coin.radius);
+
+    drawStar(
+        0,
+        0,
+        4,
+        2,
+        starScale
+    );
+
+    ctx.restore();
+}
+
+function drawStar(
+    x,
+    y,
+    outer,
+    inner,
+    scale = 1
+) {
 
     ctx.beginPath();
 
-    for(let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
+
+        const radius =
+            (i % 2 === 0 ? outer : inner) *
+            scale;
 
         const angle =
             -Math.PI / 2 +
             i * Math.PI / 5;
 
-        const radius =
-            i % 2 === 0 ? 4 : 1.8;
+        const px =
+            x + Math.cos(angle) * radius;
 
-        const x =
-            Math.cos(angle) *
-            radius;
+        const py =
+            y + Math.sin(angle) * radius;
 
-        const y =
-            Math.sin(angle) *
-            radius;
-
-        if(i === 0)
-            ctx.moveTo(x,y);
-        else
-            ctx.lineTo(x,y);
-
+        if (i === 0) {
+            ctx.moveTo(px, py);
+        } else {
+            ctx.lineTo(px, py);
+        }
     }
 
     ctx.closePath();
-
     ctx.fill();
-
-    ctx.restore();
-
 }
 
+/* =========================================================
+   POWERUPS
+========================================================= */
 
-/* =========================
-   ДВИЖЕНИЕ
-========================= */
+function createPowerup() {
 
-let moveUp = false;
-let moveDown = false;
+    const type =
+        Math.random() < .5
+            ? "speed"
+            : "shield";
 
+    powerups.push({
 
-function updateShip() {
+        type,
 
-    if(moveUp)
-        ship.y -= ship.speed;
+        x: W + 20,
+        y: random(35, H - 35),
 
-    if(moveDown)
-        ship.y += ship.speed;
+        size: 10,
 
+        speed: 80 + difficulty * 5,
 
-    if(ship.y < 5)
-        ship.y = 5;
-
-    if(ship.y > H - ship.height - 5)
-        ship.y =
-            H - ship.height - 5;
-
+        pulse: random(0, Math.PI * 2)
+    });
 }
 
+function updatePowerups(dt) {
 
-/* =========================
-   СТОЛКНОВЕНИЯ
-========================= */
+    for (let i = powerups.length - 1; i >= 0; i--) {
 
-function collision(a,b) {
+        const power = powerups[i];
 
-    return (
+        power.x -=
+            power.speed * dt;
 
-        a.x < b.x + b.width &&
+        power.pulse +=
+            dt * 5;
 
-        a.x + a.width > b.x &&
+        if (power.x < -30) {
 
-        a.y < b.y + b.height &&
-
-        a.y + a.height > b.y
-
-    );
-
-}
-
-
-/* =========================
-   ОБНОВЛЕНИЕ
-========================= */
-
-function update() {
-
-    if(!gameRunning)
-        return;
-
-
-    frame++;
-
-
-    updateShip();
-
-    updateBullets();
-
-
-    /*
-       Создание астероидов
-    */
-
-    if(frame % 55 === 0) {
-
-        createAsteroid();
-
-    }
-
-
-    /*
-       Создание монет
-    */
-
-    if(frame % 90 === 0) {
-
-        createCoin();
-
-    }
-
-
-    /*
-       Астероиды
-    */
-
-    for(let i = asteroids.length - 1; i >= 0; i--) {
-
-        const a = asteroids[i];
-
-        a.x -= a.speed;
-
-        a.rotation += a.rotationSpeed;
-
-
-        if(a.x < -30) {
-
-            asteroids.splice(i,1);
-
+            powerups.splice(i, 1);
             continue;
-
         }
 
+        if (
+            collisionCircle(
+                ship.x,
+                ship.y,
+                15,
+                power.x,
+                power.y,
+                power.size
+            )
+        ) {
 
-        /*
-           столкновение корабля
-        */
+            activatePowerup(
+                power.type
+            );
 
-        const asteroidBox = {
+            createParticles(
+                power.x,
+                power.y,
+                power.type === "speed"
+                    ? "#ffe44a"
+                    : "#58dfff",
+                16
+            );
 
-            x:
-                a.x - a.radius,
-
-            y:
-                a.y - a.radius,
-
-            width:
-                a.radius * 2,
-
-            height:
-                a.radius * 2
-
-        };
-
-
-        if(collision(ship,asteroidBox)) {
-
-            asteroids.splice(i,1);
-
-            lives--;
-
-            updateHUD();
-
-
-            if(lives <= 0) {
-
-                endGame();
-
-            }
-
-            continue;
-
+            powerups.splice(i, 1);
         }
+    }
+}
 
+function drawPowerups() {
 
-        /*
-           попадание лазера
-        */
+    for (const power of powerups) {
 
-        for(let j = bullets.length - 1; j >= 0; j--) {
+        const pulse =
+            Math.sin(power.pulse) * 2;
 
-            const b = bullets[j];
+        ctx.save();
 
-            const bulletBox = {
+        ctx.translate(
+            Math.floor(power.x),
+            Math.floor(power.y)
+        );
 
-                x: b.x,
+        ctx.fillStyle =
+            power.type === "speed"
+                ? "#ffe44a"
+                : "#58dfff";
 
-                y: b.y,
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1;
 
-                width: b.width,
+        ctx.fillRect(
+            -10 - pulse / 2,
+            -10 - pulse / 2,
+            20 + pulse,
+            20 + pulse
+        );
 
-                height: b.height
+        ctx.strokeRect(
+            -10 - pulse / 2,
+            -10 - pulse / 2,
+            20 + pulse,
+            20 + pulse
+        );
 
-            };
+        ctx.fillStyle = "#10151f";
 
+        ctx.font = "bold 12px monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-            if(collision(bulletBox,asteroidBox)) {
+        ctx.fillText(
+            power.type === "speed"
+                ? "⚡"
+                : "🛡",
+            0,
+            1
+        );
 
-                bullets.splice(j,1);
+        ctx.restore();
+    }
+}
 
-                asteroids.splice(i,1);
+function activatePowerup(type) {
 
-                score += 100;
+    if (type === "speed") {
+
+        speedBoostTimer = 5;
+
+    } else {
+
+        shieldTimer = 6;
+    }
+
+    updateHUD();
+}
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function createParticles(
+    x,
+    y,
+    color,
+    amount
+) {
+
+    for (let i = 0; i < amount; i++) {
+
+        particles.push({
+
+            x,
+            y,
+
+            vx: random(-80, 80),
+            vy: random(-80, 80),
+
+            life: random(.2, .6),
+
+            maxLife: .6,
+
+            size: random(1, 3),
+
+            color
+        });
+    }
+}
+
+function updateParticles(dt) {
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+
+        const p = particles[i];
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        p.life -= dt;
+
+        if (p.life <= 0) {
+
+            particles.splice(i, 1);
+        }
+    }
+}
+
+function drawParticles() {
+
+    for (const p of particles) {
+
+        ctx.globalAlpha =
+            Math.max(0, p.life / p.maxLife);
+
+        ctx.fillStyle = p.color;
+
+        ctx.fillRect(
+            Math.floor(p.x),
+            Math.floor(p.y),
+            Math.ceil(p.size),
+            Math.ceil(p.size)
+        );
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+/* =========================================================
+   COLLISION
+========================================================= */
+
+function collisionCircle(
+    x1,
+    y1,
+    r1,
+    x2,
+    y2,
+    r2
+) {
+
+    const dx = x1 - x2;
+    const dy = y1 - y2;
+
+    const distance =
+        Math.sqrt(dx * dx + dy * dy);
+
+    return distance < r1 + r2;
+}
+
+/* =========================================================
+   BULLET / ASTEROID COLLISIONS
+========================================================= */
+
+function checkBulletCollisions() {
+
+    for (
+        let b = bullets.length - 1;
+        b >= 0;
+        b--
+    ) {
+
+        const bullet = bullets[b];
+
+        for (
+            let a = asteroids.length - 1;
+            a >= 0;
+            a--
+        ) {
+
+            const asteroid =
+                asteroids[a];
+
+            if (
+                collisionCircle(
+                    bullet.x,
+                    bullet.y,
+                    4,
+                    asteroid.x,
+                    asteroid.y,
+                    asteroid.radius
+                )
+            ) {
+
+                createParticles(
+                    asteroid.x,
+                    asteroid.y,
+                    "#ff9c58",
+                    16
+                );
+
+                score += 5;
+
+                bullets.splice(b, 1);
+                asteroids.splice(a, 1);
+
+                updateHUD();
 
                 break;
-
             }
-
         }
+    }
+}
 
+/* =========================================================
+   ASTEROID / SHIP HIT
+========================================================= */
+
+function hitAsteroid(index) {
+
+    if (invulnerabilityTimer > 0) {
+        return;
     }
 
+    if (shieldTimer > 0) {
 
-    /*
-       Монеты
-    */
+        createParticles(
+            ship.x,
+            ship.y,
+            "#5ce5ff",
+            20
+        );
 
-    for(let i = coins.length - 1; i >= 0; i--) {
+        shieldTimer = 0;
 
-        const c = coins[i];
+        updateHUD();
 
-        c.x -= c.speed;
-
-
-        if(c.x < -20) {
-
-            coins.splice(i,1);
-
-            continue;
-
-        }
-
-
-        const coinBox = {
-
-            x:
-                c.x - c.radius,
-
-            y:
-                c.y - c.radius,
-
-            width:
-                c.radius * 2,
-
-            height:
-                c.radius * 2
-
-        };
-
-
-        if(collision(ship,coinBox)) {
-
-            coins.splice(i,1);
-
-            coinCount++;
-
-            score += 50;
-
-        }
-
+        return;
     }
 
+    lives--;
+
+    invulnerabilityTimer = 1.2;
+
+    createParticles(
+        ship.x,
+        ship.y,
+        "#ff5b5b",
+        25
+    );
+
+    asteroids.splice(index, 1);
 
     updateHUD();
 
+    if (lives <= 0) {
+
+        endGame();
+    }
 }
 
+/* =========================================================
+   AUTO AIM
+========================================================= */
 
-/* =========================
-   ОТРИСОВКА
-========================= */
+function getNearestAsteroid() {
+
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    for (const asteroid of asteroids) {
+
+        if (asteroid.x < ship.x) {
+            continue;
+        }
+
+        const dx =
+            asteroid.x - ship.x;
+
+        const dy =
+            asteroid.y - ship.y;
+
+        const distance =
+            dx * dx + dy * dy;
+
+        if (distance < nearestDistance) {
+
+            nearestDistance = distance;
+            nearest = asteroid;
+        }
+    }
+
+    return nearest;
+}
+
+/* =========================================================
+   SHIP MOVEMENT
+========================================================= */
+
+function updateShip(dt) {
+
+    let direction = 0;
+
+    if (ship.movingUp) {
+        direction -= 1;
+    }
+
+    if (ship.movingDown) {
+        direction += 1;
+    }
+
+    const currentSpeed =
+        ship.speed *
+        (speedBoostTimer > 0 ? 1.75 : 1);
+
+    ship.y +=
+        direction *
+        currentSpeed *
+        dt;
+
+    const margin = 18;
+
+    if (ship.y < margin) {
+        ship.y = margin;
+    }
+
+    if (ship.y > H - margin) {
+        ship.y = H - margin;
+    }
+}
+
+/* =========================================================
+   GAME UPDATE
+========================================================= */
+
+function update(dt) {
+
+    if (!gameRunning || paused) {
+        return;
+    }
+
+    if (speedBoostTimer > 0) {
+
+        speedBoostTimer -= dt;
+
+        if (speedBoostTimer < 0) {
+            speedBoostTimer = 0;
+        }
+    }
+
+    if (shieldTimer > 0) {
+
+        shieldTimer -= dt;
+
+        if (shieldTimer < 0) {
+            shieldTimer = 0;
+        }
+    }
+
+    if (invulnerabilityTimer > 0) {
+
+        invulnerabilityTimer -= dt;
+
+        if (invulnerabilityTimer < 0) {
+            invulnerabilityTimer = 0;
+        }
+    }
+
+    if (fireCooldown > 0) {
+        fireCooldown -= dt;
+    }
+
+    difficulty += dt * .025;
+
+    updateShip(dt);
+
+    updateBullets(dt);
+    updateAsteroids(dt);
+    updateCoins(dt);
+    updatePowerups(dt);
+    updateParticles(dt);
+
+    checkBulletCollisions();
+
+    asteroidTimer += dt;
+    coinTimer += dt;
+    powerTimer += dt;
+
+    const asteroidInterval =
+        Math.max(
+            .45,
+            1.15 - difficulty * .025
+        );
+
+    if (asteroidTimer >= asteroidInterval) {
+
+        asteroidTimer = 0;
+
+        createAsteroid();
+    }
+
+    if (coinTimer >= 1.7) {
+
+        coinTimer = 0;
+
+        createCoin();
+    }
+
+    if (powerTimer >= 7) {
+
+        powerTimer = 0;
+
+        if (Math.random() < .65) {
+            createPowerup();
+        }
+    }
+
+    updateHUD();
+}
+
+/* =========================================================
+   DRAW
+========================================================= */
 
 function draw() {
 
-    drawBackground();
+    drawBackground(0);
 
-
-    for(const c of coins) {
-
-        drawCoin(c);
-
-    }
-
-
-    for(const a of asteroids) {
-
-        drawAsteroid(a);
-
-    }
-
-
+    drawPowerups();
+    drawCoins();
+    drawAsteroids();
     drawBullets();
+    drawParticles();
 
-    drawShip();
+    /*
+       Когда корабль получает урон,
+       он мигает.
+    */
 
+    if (
+        invulnerabilityTimer <= 0 ||
+        Math.floor(invulnerabilityTimer * 10) % 2 === 0
+    ) {
+
+        drawShip();
+    }
 }
 
+function drawCoins() {
 
-/* =========================
-   ИГРОВОЙ ЦИКЛ
-========================= */
+    for (const coin of coins) {
+        drawCoin(coin);
+    }
+}
 
-function gameLoop() {
+/* =========================================================
+   MAIN LOOP
+========================================================= */
 
-    update();
+function gameLoop(timestamp) {
 
+    let dt =
+        (timestamp - lastTime) / 1000;
+
+    lastTime = timestamp;
+
+    if (dt > .05) {
+        dt = .05;
+    }
+
+    update(dt);
     draw();
 
     requestAnimationFrame(gameLoop);
-
 }
 
-
-/* =========================
+/* =========================================================
    HUD
-========================= */
+========================================================= */
 
 function updateHUD() {
 
-    document.getElementById("score")
-        .textContent =
-        "SCORE: " +
-        String(score).padStart(5,"0");
+    livesElement.textContent =
+        "❤️".repeat(Math.max(0, lives));
 
+    scoreElement.textContent =
+        score;
 
-    document.getElementById("coins")
-        .textContent =
-        "⭐ " +
-        coinCount;
+    if (speedBoostTimer > 0) {
 
+        speedStatus.style.display =
+            "inline-block";
 
-    document.getElementById("lives")
-        .textContent =
-        "♥ ".repeat(lives) +
-        "♡ ".repeat(3 - lives);
+        speedTimerElement.textContent =
+            Math.ceil(speedBoostTimer);
 
+    } else {
+
+        speedStatus.style.display =
+            "none";
+    }
+
+    if (shieldTimer > 0) {
+
+        shieldStatus.style.display =
+            "inline-block";
+
+        shieldTimerElement.textContent =
+            Math.ceil(shieldTimer);
+
+    } else {
+
+        shieldStatus.style.display =
+            "none";
+    }
+
+    if (autoAim) {
+
+        aimStatus.style.display =
+            "inline-block";
+
+    } else {
+
+        aimStatus.style.display =
+            "none";
+    }
 }
 
-
-/* =========================
-   ИГРА
-========================= */
+/* =========================================================
+   START GAME
+========================================================= */
 
 function startGame() {
 
-    score = 0;
-
-    coinCount = 0;
-
-    lives = 3;
-
-    frame = 0;
-
-    bullets = [];
-
-    asteroids = [];
-
-    coins = [];
-
-    ship.y = H / 2;
+    menu.classList.add("hidden");
+    gameOver.classList.add("hidden");
+    pauseMenu.classList.add("hidden");
 
     gameRunning = true;
+    paused = false;
 
-    document.getElementById("menu")
-        .style.display = "none";
+    score = 0;
+    lives = 3;
 
-    document.getElementById("gameOver")
-        .style.display = "none";
+    difficulty = 1;
+
+    asteroidTimer = 0;
+    coinTimer = 0;
+    powerTimer = 0;
+
+    speedBoostTimer = 0;
+    shieldTimer = 0;
+
+    invulnerabilityTimer = 0;
+    fireCooldown = 0;
+
+    autoAim = false;
+
+    ship.x = 70;
+    ship.y = H / 2;
+
+    asteroids.length = 0;
+    bullets.length = 0;
+    coins.length = 0;
+    powerups.length = 0;
+    particles.length = 0;
 
     updateHUD();
-
 }
 
-
-/* =========================
-   GAME OVER
-========================= */
+/* =========================================================
+   END GAME
+========================================================= */
 
 function endGame() {
 
     gameRunning = false;
+    paused = false;
 
-    document.getElementById("finalScore")
-        .textContent =
-        "Очки: " +
-        score +
-        "   Монеты: " +
-        coinCount;
+    finalScoreElement.textContent =
+        "SCORE: " + score;
 
-    document.getElementById("gameOver")
-        .style.display = "flex";
-
+    gameOver.classList.remove("hidden");
 }
 
+/* =========================================================
+   PAUSE
+========================================================= */
 
-/* =========================
-   КНОПКИ
-========================= */
+function togglePause() {
 
-function setupButton(button, down, up) {
+    if (!gameRunning) {
+        return;
+    }
 
-    button.addEventListener(
+    paused = !paused;
+
+    if (paused) {
+
+        pauseMenu.classList.remove("hidden");
+
+    } else {
+
+        pauseMenu.classList.add("hidden");
+
+        cheatInput.blur();
+    }
+}
+
+/* =========================================================
+   RETURN TO MENU
+========================================================= */
+
+function returnToMenu() {
+
+    gameRunning = false;
+    paused = false;
+
+    pauseMenu.classList.add("hidden");
+    gameOver.classList.add("hidden");
+    menu.classList.remove("hidden");
+
+    autoAim = false;
+
+    updateHUD();
+}
+
+/* =========================================================
+   CHEAT CODE
+========================================================= */
+
+function activateCheat() {
+
+    const code =
+        cheatInput.value
+            .trim()
+            .toUpperCase();
+
+    if (code === "ASTRO-AIM") {
+
+        autoAim = true;
+
+        cheatMessage.textContent =
+            "✓ AUTO AIM АКТИВИРОВАН";
+
+        cheatInput.value = "";
+
+        updateHUD();
+
+    } else {
+
+        cheatMessage.textContent =
+            "✕ НЕВЕРНЫЙ ЧИТ-КОД";
+    }
+}
+
+/* =========================================================
+   BUTTON SETUP
+========================================================= */
+
+function setupHoldButton(
+    element,
+    onStart,
+    onEnd
+) {
+
+    element.addEventListener(
         "pointerdown",
-        function(e) {
+        event => {
 
-            e.preventDefault();
+            event.preventDefault();
 
-            down();
+            onStart();
 
+            try {
+                element.setPointerCapture(
+                    event.pointerId
+                );
+            } catch (_) {}
         }
     );
 
-
-    button.addEventListener(
+    element.addEventListener(
         "pointerup",
-        function(e) {
+        event => {
 
-            e.preventDefault();
+            event.preventDefault();
 
-            up();
-
+            onEnd();
         }
     );
 
-
-    button.addEventListener(
+    element.addEventListener(
         "pointercancel",
-        up
+        onEnd
     );
 
-
-    button.addEventListener(
+    element.addEventListener(
         "pointerleave",
-        up
-    );
+        event => {
 
+            if (
+                event.buttons === 0
+            ) {
+                onEnd();
+            }
+        }
+    );
 }
 
-
-setupButton(
-
+setupHoldButton(
     document.getElementById("upButton"),
 
-    function() {
-        moveUp = true;
+    () => {
+        ship.movingUp = true;
     },
 
-    function() {
-        moveUp = false;
+    () => {
+        ship.movingUp = false;
     }
-
 );
 
-
-setupButton(
-
+setupHoldButton(
     document.getElementById("downButton"),
 
-    function() {
-        moveDown = true;
+    () => {
+        ship.movingDown = true;
     },
 
-    function() {
-        moveDown = false;
+    () => {
+        ship.movingDown = false;
     }
-
 );
 
+setupHoldButton(
+    document.getElementById("fireButton"),
 
-/* Огонь */
+    () => {
+        shoot();
+    },
 
-document.getElementById("fireButton")
-    .addEventListener(
-        "pointerdown",
-        function(e) {
+    () => {}
+);
 
-            e.preventDefault();
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
 
-            shoot();
+startButton.addEventListener(
+    "click",
+    startGame
+);
 
+pauseButton.addEventListener(
+    "click",
+    togglePause
+);
+
+resumeButton.addEventListener(
+    "click",
+    togglePause
+);
+
+restartButton.addEventListener(
+    "click",
+    startGame
+);
+
+restartPauseButton.addEventListener(
+    "click",
+    startGame
+);
+
+menuButton.addEventListener(
+    "click",
+    returnToMenu
+);
+
+menuButtonFromPause.addEventListener(
+    "click",
+    returnToMenu
+);
+
+cheatButton.addEventListener(
+    "click",
+    activateCheat
+);
+
+cheatInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+            activateCheat();
         }
-    );
+    }
+);
 
-
-/* Старт */
-
-document.getElementById("startButton")
-    .addEventListener(
-        "click",
-        startGame
-    );
-
-
-/* Заново */
-
-document.getElementById("restartButton")
-    .addEventListener(
-        "click",
-        startGame
-    );
-
-
-/* =========================
-   КЛАВИАТУРА
-========================= */
+/* =========================================================
+   KEYBOARD CONTROLS
+========================================================= */
 
 document.addEventListener(
     "keydown",
-    function(e) {
+    event => {
 
-        if(e.key === "ArrowUp")
-            moveUp = true;
+        if (event.key === "ArrowUp") {
 
-        if(e.key === "ArrowDown")
-            moveDown = true;
+            event.preventDefault();
 
-        if(e.code === "Space")
+            ship.movingUp = true;
+        }
+
+        if (event.key === "ArrowDown") {
+
+            event.preventDefault();
+
+            ship.movingDown = true;
+        }
+
+        if (
+            event.key === " " ||
+            event.key === "Spacebar"
+        ) {
+
+            event.preventDefault();
+
             shoot();
+        }
 
+        if (
+            event.key === "Escape" ||
+            event.key.toLowerCase() === "p"
+        ) {
+
+            if (
+                gameRunning &&
+                document.activeElement !== cheatInput
+            ) {
+
+                togglePause();
+            }
+        }
     }
 );
-
 
 document.addEventListener(
     "keyup",
-    function(e) {
+    event => {
 
-        if(e.key === "ArrowUp")
-            moveUp = false;
+        if (event.key === "ArrowUp") {
+            ship.movingUp = false;
+        }
 
-        if(e.key === "ArrowDown")
-            moveDown = false;
-
+        if (event.key === "ArrowDown") {
+            ship.movingDown = false;
+        }
     }
 );
 
-
-/* =========================
-   ЗАПУСК
-========================= */
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
 createStars();
 
 updateHUD();
 
-gameLoop();
+draw();
 
+requestAnimationFrame(
+    gameLoop
+);
 </script>
 
 </body>
