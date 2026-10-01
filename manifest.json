@@ -1,0 +1,12 @@
+{
+  "name": "CosmoPilot",
+  "short_name": "CosmoPilot",
+  "description": "Pixel space game by GETOGENOV",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#02030a",
+  "theme_color": "#02030a",
+  "icons": []
+}
