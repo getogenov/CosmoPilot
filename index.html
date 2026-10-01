@@ -2,8 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+>
 
 <title>CosmoPilot</title>
 
@@ -16,17 +19,14 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
     margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: #02030a;
     font-family: monospace;
-}
-
-body {
     touch-action: none;
 }
 
@@ -41,72 +41,73 @@ input {
     -webkit-touch-callout: default;
 }
 
-#gameWrapper {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #02030a;
-}
-
 #gameCanvas {
-    position: absolute;
+    position: fixed;
     left: 50%;
     top: 50%;
+
     width: min(100vw, 177.78vh);
     height: min(56.25vw, 100vh);
+
     transform: translate(-50%, -50%);
+
+    background: #02030a;
+
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    background: #02030a;
 }
 
 #creator {
     position: fixed;
-    top: 8px;
+    top: 7px;
     left: 50%;
     transform: translateX(-50%);
-    color: #ffffff;
+
+    color: white;
     font-size: 10px;
     letter-spacing: 2px;
+
     z-index: 20;
-    text-shadow: 2px 2px #000;
     pointer-events: none;
+
+    text-shadow: 2px 2px #000;
 }
 
-/* HUD */
+/* ================= HUD ================= */
 
 #hud {
     position: fixed;
-    top: 26px;
+    top: 25px;
     left: 12px;
     right: 12px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     z-index: 20;
     pointer-events: none;
 }
 
-.hudBox {
+.hud {
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     text-shadow: 2px 2px #000;
 }
 
-#livesText {
+#lives {
     display: flex;
     gap: 5px;
     align-items: center;
 }
 
-.pixelHeart {
-    position: relative;
+.heart {
     width: 12px;
     height: 11px;
-    display: inline-block;
     background: #ff3030;
+
+    display: inline-block;
+
     clip-path: polygon(
         0 25%,
         25% 25%,
@@ -122,136 +123,158 @@ input {
         25% 75%,
         0 50%
     );
-    image-rendering: pixelated;
 }
 
-.pixelHeart.empty {
-    background: #33333f;
-}
-
-#powerText {
-    min-width: 90px;
-    text-align: center;
+.heart.empty {
+    background: #30313a;
 }
 
 #pauseButton {
-    pointer-events: auto;
+    width: 44px;
+    height: 34px;
+
     border: 2px solid white;
+    border-radius: 4px;
+
     background: #111827;
     color: white;
-    width: 42px;
-    height: 34px;
+
+    font-family: monospace;
     font-size: 16px;
     font-weight: bold;
-    border-radius: 4px;
+
+    pointer-events: auto;
 }
 
-#pauseButton:active {
-    transform: scale(0.92);
-}
-
-/* CONTROLS */
+/* ================= CONTROLS ================= */
 
 #controls {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 15px;
+    bottom: 14px;
+
     z-index: 20;
+
     pointer-events: none;
 }
 
-#leftControls {
+#movement {
     position: absolute;
-    left: 18px;
+    left: 17px;
     bottom: 0;
+
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
+
     pointer-events: auto;
 }
 
-.controlButton {
-    width: 54px;
+.control {
+    width: 55px;
     height: 45px;
+
     border: 2px solid white;
     border-radius: 5px;
-    background: rgba(15, 23, 42, 0.88);
-    color: white;
-    font-size: 23px;
-    font-family: monospace;
-    font-weight: bold;
-}
 
-.controlButton:active {
-    transform: scale(0.92);
-    background: rgba(50, 70, 100, 0.95);
+    background: rgba(12, 20, 38, 0.9);
+    color: white;
+
+    font-family: monospace;
+    font-size: 22px;
+    font-weight: bold;
 }
 
 #fireButton {
     position: absolute;
-    right: 18px;
+
+    right: 17px;
     bottom: 0;
-    width: 74px;
+
+    width: 76px;
     height: 54px;
+
     border: 2px solid white;
     border-radius: 5px;
-    background: rgba(60, 20, 20, 0.92);
+
+    background: rgba(60, 20, 20, 0.95);
+
     pointer-events: auto;
 }
 
+/* пиксельная пуля */
+
 #fireButton::before {
     content: "";
+
     position: absolute;
-    left: 19px;
-    top: 21px;
-    width: 30px;
-    height: 9px;
-    background: #f2f2f2;
+
+    left: 18px;
+    top: 22px;
+
+    width: 35px;
+    height: 8px;
+
+    background: white;
+
     box-shadow:
-        7px 0 0 #ffffff,
-        14px 0 0 #ffdf4a,
-        21px 0 0 #ff8c32;
+        7px 0 #ffffff,
+        14px 0 #ffe45a,
+        21px 0 #ff9b32;
 }
 
 #fireButton::after {
     content: "";
+
     position: absolute;
-    left: 15px;
-    top: 18px;
-    width: 6px;
-    height: 15px;
-    background: #ffffff;
+
+    left: 14px;
+    top: 19px;
+
+    width: 5px;
+    height: 14px;
+
+    background: white;
 }
 
-/* OVERLAYS */
+/* ================= OVERLAYS ================= */
 
 .overlay {
     position: fixed;
     inset: 0;
+
     z-index: 50;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.78);
+
+    background: rgba(0, 0, 0, 0.82);
 }
 
-.overlay.hidden {
-    display: none;
+.hidden {
+    display: none !important;
 }
 
 .panel {
-    width: min(88vw, 390px);
+    width: min(88vw, 380px);
+
     padding: 25px;
+
     border: 3px solid white;
+
     background: #090d18;
     color: white;
+
     text-align: center;
+
     box-shadow: 0 0 0 4px #172033;
 }
 
 .panel h1 {
-    margin: 0 0 12px;
+    margin: 0 0 15px;
+
     font-size: 28px;
 }
 
@@ -261,79 +284,89 @@ input {
 }
 
 .mainButton {
-    margin-top: 12px;
     width: 100%;
     min-height: 46px;
+
+    margin-top: 12px;
+
     border: 2px solid white;
+    border-radius: 3px;
+
     background: #182338;
     color: white;
+
     font-family: monospace;
     font-size: 15px;
     font-weight: bold;
-    border-radius: 3px;
+
+    touch-action: manipulation;
 }
 
-.mainButton:active {
-    transform: scale(0.97);
+.mainButton:active,
+.control:active,
+#fireButton:active,
+#pauseButton:active {
+    transform: scale(0.94);
 }
 
-/* CHEAT */
+/* ================= CHEAT ================= */
 
 #cheatInput {
     width: 100%;
     height: 42px;
-    margin-top: 14px;
+
+    margin-top: 15px;
     padding: 8px;
+
     border: 2px solid #777;
+
     background: #02030a;
     color: white;
+
     font-family: monospace;
     text-align: center;
+
     text-transform: uppercase;
 }
 
 #cheatMessage {
     min-height: 18px;
     margin-top: 8px;
+
     font-size: 11px;
 }
 
-/* PORTRAIT */
+/* ================= PORTRAIT ================= */
 
 #portraitWarning {
     position: fixed;
     inset: 0;
+
     z-index: 100;
+
     display: none;
+
     align-items: center;
     justify-content: center;
+
     background: #02030a;
     color: white;
+
     text-align: center;
-    padding: 30px;
 }
 
-#portraitWarning .portraitBox {
-    border: 3px solid white;
+.portraitBox {
     padding: 25px;
+    border: 3px solid white;
 }
 
-#portraitIcon {
-    width: 36px;
+#phoneIcon {
+    width: 34px;
     height: 55px;
-    border: 4px solid white;
-    margin: 0 auto 20px;
-    position: relative;
-}
 
-#portraitIcon::after {
-    content: "";
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    background: white;
-    left: 11px;
-    bottom: 4px;
+    margin: 0 auto 18px;
+
+    border: 4px solid white;
 }
 
 @media (orientation: portrait) {
@@ -341,122 +374,81 @@ input {
         display: flex;
     }
 }
-
-/* POWERUP PIXEL ICONS */
-
-.powerIcon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
-}
-
-.pixelShield {
-    width: 15px;
-    height: 18px;
-    background: #44aaff;
-    clip-path: polygon(
-        50% 0,
-        100% 18%,
-        90% 68%,
-        50% 100%,
-        10% 68%,
-        0 18%
-    );
-    box-shadow: inset 0 0 0 2px #d9f4ff;
-}
-
-.pixelSpeed {
-    position: relative;
-    width: 21px;
-    height: 16px;
-}
-
-.pixelSpeed::before,
-.pixelSpeed::after {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 6px;
-    background: #ffe600;
-    clip-path: polygon(
-        0 0,
-        55% 0,
-        55% 35%,
-        100% 35%,
-        100% 65%,
-        55% 65%,
-        55% 100%,
-        0 100%,
-        45% 50%
-    );
-}
-
-.pixelSpeed::before {
-    left: 0;
-    top: 0;
-}
-
-.pixelSpeed::after {
-    left: 9px;
-    top: 8px;
-}
 </style>
 </head>
 
 <body>
 
-<div id="gameWrapper">
+<canvas id="gameCanvas" width="480" height="270"></canvas>
 
-    <canvas id="gameCanvas" width="480" height="270"></canvas>
+<div id="creator">
+    CREATED BY GETOGENOV
+</div>
 
-    <div id="creator">CREATED BY GETOGENOV</div>
+<!-- HUD -->
 
-    <div id="hud">
-        <div class="hudBox" id="livesText"></div>
+<div id="hud">
 
-        <div class="hudBox" id="scoreText">
-            SCORE: 0
-        </div>
+    <div class="hud" id="lives"></div>
 
-        <div class="hudBox" id="powerText"></div>
-
-        <button id="pauseButton">II</button>
+    <div class="hud" id="score">
+        SCORE: 0
     </div>
 
-    <div id="controls">
+    <div class="hud" id="power"></div>
 
-        <div id="leftControls">
-            <button class="controlButton" id="upButton">▲</button>
-            <button class="controlButton" id="downButton">▼</button>
-        </div>
+    <button id="pauseButton">
+        II
+    </button>
 
-        <button id="fireButton"></button>
+</div>
+
+<!-- CONTROLS -->
+
+<div id="controls">
+
+    <div id="movement">
+
+        <button class="control" id="upButton">
+            ▲
+        </button>
+
+        <button class="control" id="downButton">
+            ▼
+        </button>
 
     </div>
+
+    <button id="fireButton"></button>
 
 </div>
 
 <!-- START -->
 
-<div class="overlay" id="startOverlay">
+<div class="overlay" id="startScreen">
+
     <div class="panel">
+
         <h1>COSMOPILOT</h1>
 
         <p>
-            Космический пилот.<br>
-            Уничтожай астероиды,<br>
-            собирай монеты и бонусы.
+            SPACE PILOT<br><br>
+            Destroy asteroids.<br>
+            Collect coins and power-ups.
         </p>
 
         <button class="mainButton" id="startButton">
             START GAME
         </button>
+
     </div>
+
 </div>
 
 <!-- PAUSE -->
 
-<div class="overlay hidden" id="pauseOverlay">
+<div class="overlay hidden" id="pauseScreen">
+
     <div class="panel">
 
         <h1>PAUSED</h1>
@@ -468,26 +460,31 @@ input {
         <input
             id="cheatInput"
             type="text"
-            maxlength="30"
             placeholder="ENTER CHEAT"
+            maxlength="30"
             autocomplete="off"
             autocorrect="off"
             autocapitalize="characters"
             spellcheck="false"
         >
 
-        <button class="mainButton" id="activateCheatButton">
+        <button
+            class="mainButton"
+            id="cheatButton"
+        >
             ACTIVATE CHEAT
         </button>
 
         <div id="cheatMessage"></div>
 
     </div>
+
 </div>
 
 <!-- GAME OVER -->
 
-<div class="overlay hidden" id="gameOverOverlay">
+<div class="overlay hidden" id="gameOverScreen">
+
     <div class="panel">
 
         <h1>GAME OVER</h1>
@@ -501,27 +498,29 @@ input {
         </button>
 
     </div>
+
 </div>
 
 <!-- PORTRAIT -->
 
 <div id="portraitWarning">
-    <div class="portraitBox">
-        <div id="portraitIcon"></div>
 
-        <div>
-            ПОВЕРНИ ТЕЛЕФОН<br>
-            В ГОРИЗОНТАЛЬНОЕ ПОЛОЖЕНИЕ
-        </div>
+    <div class="portraitBox">
+
+        <div id="phoneIcon"></div>
+
+        TURN YOUR PHONE<br>
+        HORIZONTALLY
+
     </div>
+
 </div>
 
 <script>
-"use strict";
 
-/* =========================
+/* =====================================================
    CANVAS
-========================= */
+===================================================== */
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -531,39 +530,68 @@ const H = canvas.height;
 
 ctx.imageSmoothingEnabled = false;
 
-/* =========================
+
+/* =====================================================
    UI
-========================= */
+===================================================== */
 
-const startOverlay = document.getElementById("startOverlay");
-const pauseOverlay = document.getElementById("pauseOverlay");
-const gameOverOverlay = document.getElementById("gameOverOverlay");
+const startScreen =
+    document.getElementById("startScreen");
 
-const startButton = document.getElementById("startButton");
-const resumeButton = document.getElementById("resumeButton");
-const restartButton = document.getElementById("restartButton");
+const pauseScreen =
+    document.getElementById("pauseScreen");
 
-const pauseButton = document.getElementById("pauseButton");
+const gameOverScreen =
+    document.getElementById("gameOverScreen");
 
-const upButton = document.getElementById("upButton");
-const downButton = document.getElementById("downButton");
-const fireButton = document.getElementById("fireButton");
+const startButton =
+    document.getElementById("startButton");
 
-const livesText = document.getElementById("livesText");
-const scoreText = document.getElementById("scoreText");
-const powerText = document.getElementById("powerText");
+const resumeButton =
+    document.getElementById("resumeButton");
 
-const cheatInput = document.getElementById("cheatInput");
-const activateCheatButton = document.getElementById("activateCheatButton");
-const cheatMessage = document.getElementById("cheatMessage");
+const restartButton =
+    document.getElementById("restartButton");
 
-const finalScore = document.getElementById("finalScore");
+const pauseButton =
+    document.getElementById("pauseButton");
 
-/* =========================
-   GAME STATE
-========================= */
+const upButton =
+    document.getElementById("upButton");
 
-let gameRunning = false;
+const downButton =
+    document.getElementById("downButton");
+
+const fireButton =
+    document.getElementById("fireButton");
+
+const livesElement =
+    document.getElementById("lives");
+
+const scoreElement =
+    document.getElementById("score");
+
+const powerElement =
+    document.getElementById("power");
+
+const finalScoreElement =
+    document.getElementById("finalScore");
+
+const cheatInput =
+    document.getElementById("cheatInput");
+
+const cheatButton =
+    document.getElementById("cheatButton");
+
+const cheatMessage =
+    document.getElementById("cheatMessage");
+
+
+/* =====================================================
+   GAME VARIABLES
+===================================================== */
+
+let running = false;
 let paused = false;
 
 let score = 0;
@@ -571,228 +599,316 @@ let lives = 3;
 
 let lastTime = 0;
 
-let spawnTimer = 0;
+let asteroidTimer = 0;
 let coinTimer = 0;
 let powerupTimer = 0;
 
 let fireTimer = 0;
+
 let invulnerabilityTimer = 0;
 
 let shieldTimer = 0;
 let speedTimer = 0;
 
-let speedAnimationTime = 0;
-
 let autoAim = false;
 
-/* =========================
-   SHIP
-========================= */
+let speedAnimation = 0;
 
-const ship = {
-    x: 75,
-    y: H / 2,
-    width: 25,
-    height: 18,
-    speed: 145,
-    fireDelay: 0.28
-};
 
-/* =========================
+/* =====================================================
    INPUT
-========================= */
+===================================================== */
 
-const keys = {
+const input = {
     up: false,
     down: false,
     fire: false
 };
 
-/* =========================
-   OBJECT ARRAYS
-========================= */
 
-let bullets = [];
+/* =====================================================
+   SHIP
+===================================================== */
+
+const ship = {
+    x: 65,
+    y: H / 2,
+
+    speed: 150,
+
+    width: 25,
+    height: 18
+};
+
+
+/* =====================================================
+   GAME ARRAYS
+===================================================== */
+
 let asteroids = [];
+let bullets = [];
 let coins = [];
 let powerups = [];
 let particles = [];
 let stars = [];
 
-/* =========================
-   RANDOM
-========================= */
 
-function random(min, max) {
+/* =====================================================
+   RANDOM
+===================================================== */
+
+function rand(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function randomInt(min, max) {
-    return Math.floor(random(min, max + 1));
-}
 
-/* =========================
-   STARS
-========================= */
-
-function createStars() {
-    stars = [];
-
-    for (let i = 0; i < 90; i++) {
-        stars.push({
-            x: random(0, W),
-            y: random(0, H),
-            size: randomInt(1, 2),
-            speed: random(8, 28),
-            brightness: random(0.3, 1)
-        });
-    }
-}
-
-/* =========================
+/* =====================================================
    RESET
-========================= */
+===================================================== */
 
 function resetGame() {
+
     score = 0;
     lives = 3;
 
-    bullets = [];
+    ship.x = 65;
+    ship.y = H / 2;
+
     asteroids = [];
+    bullets = [];
     coins = [];
     powerups = [];
     particles = [];
+    stars = [];
 
-    ship.x = 75;
-    ship.y = H / 2;
-
-    spawnTimer = 0;
-    coinTimer = 0;
-    powerupTimer = 0;
+    asteroidTimer = 0.5;
+    coinTimer = 2;
+    powerupTimer = 5;
 
     fireTimer = 0;
+
     invulnerabilityTimer = 0;
 
     shieldTimer = 0;
     speedTimer = 0;
 
-    speedAnimationTime = 0;
-
     autoAim = false;
 
-    cheatInput.value = "";
-    cheatMessage.textContent = "";
+    speedAnimation = 0;
 
     createStars();
 
     updateHUD();
 }
 
-/* =========================
+
+/* =====================================================
    HUD
-========================= */
+===================================================== */
 
 function updateHUD() {
 
-    livesText.innerHTML = "";
+    livesElement.innerHTML = "";
 
     for (let i = 0; i < 3; i++) {
-        const heart = document.createElement("span");
 
-        heart.className = "pixelHeart";
+        const heart =
+            document.createElement("span");
+
+        heart.className = "heart";
 
         if (i >= lives) {
             heart.classList.add("empty");
         }
 
-        livesText.appendChild(heart);
+        livesElement.appendChild(heart);
     }
 
-    scoreText.textContent = "SCORE: " + score;
+    scoreElement.textContent =
+        "SCORE: " + score;
 
-    let power = "";
+    let text = "";
 
     if (shieldTimer > 0) {
-        power +=
-            '<span class="powerIcon pixelShield"></span>' +
-            " " + shieldTimer.toFixed(1);
+
+        text +=
+            "SHIELD " +
+            shieldTimer.toFixed(1);
     }
 
     if (speedTimer > 0) {
 
-        if (power !== "") {
-            power += "  ";
+        if (text !== "") {
+            text += " | ";
         }
 
-        power +=
-            '<span class="powerIcon pixelSpeed"></span>' +
-            " " + speedTimer.toFixed(1);
+        text +=
+            "SPEED " +
+            speedTimer.toFixed(1);
     }
 
-    powerText.innerHTML = power;
+    powerElement.textContent = text;
 }
 
-/* =========================
-   SHIP DRAW
-========================= */
+
+/* =====================================================
+   STARS
+===================================================== */
+
+function createStars() {
+
+    for (let i = 0; i < 90; i++) {
+
+        stars.push({
+            x: rand(0, W),
+            y: rand(0, H),
+            size: Math.random() < 0.8 ? 1 : 2,
+            speed: rand(8, 30),
+            alpha: rand(0.3, 1)
+        });
+    }
+}
+
+function updateStars(dt) {
+
+    for (const star of stars) {
+
+        star.x -= star.speed * dt;
+
+        if (star.x < 0) {
+
+            star.x = W;
+            star.y = rand(0, H);
+        }
+    }
+}
+
+function drawStars() {
+
+    for (const star of stars) {
+
+        ctx.globalAlpha = star.alpha;
+
+        ctx.fillStyle = "#ffffff";
+
+        ctx.fillRect(
+            Math.floor(star.x),
+            Math.floor(star.y),
+            star.size,
+            star.size
+        );
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* =====================================================
+   SHIP
+===================================================== */
 
 function drawShip() {
+
+    const x = Math.floor(ship.x);
+    const y = Math.floor(ship.y);
 
     ctx.save();
 
     if (invulnerabilityTimer > 0) {
-        if (Math.floor(invulnerabilityTimer * 12) % 2 === 0) {
+
+        if (
+            Math.floor(invulnerabilityTimer * 12) % 2 === 0
+        ) {
             ctx.globalAlpha = 0.35;
         }
     }
 
-    const x = Math.round(ship.x);
-    const y = Math.round(ship.y);
+    /* engine */
 
-    /* ship shadow */
+    ctx.fillStyle = "#ff9d32";
 
-    ctx.fillStyle = "#000";
-    ctx.fillRect(x - 8, y - 7, 25, 16);
+    ctx.fillRect(
+        x - 17,
+        y - 3,
+        7,
+        6
+    );
 
-    /* main body */
+    ctx.fillStyle = "#fff04c";
 
-    ctx.fillStyle = "#d8e4ff";
+    ctx.fillRect(
+        x - 23,
+        y - 2,
+        6,
+        4
+    );
 
-    ctx.fillRect(x - 4, y - 7, 13, 14);
-    ctx.fillRect(x + 8, y - 4, 7, 8);
-    ctx.fillRect(x + 15, y - 2, 6, 4);
+    /* wings */
+
+    ctx.fillStyle = "#68789e";
+
+    ctx.fillRect(
+        x - 7,
+        y - 9,
+        12,
+        5
+    );
+
+    ctx.fillRect(
+        x - 7,
+        y + 4,
+        12,
+        5
+    );
+
+    /* body */
+
+    ctx.fillStyle = "#dce5ff";
+
+    ctx.fillRect(
+        x - 2,
+        y - 7,
+        16,
+        14
+    );
+
+    ctx.fillRect(
+        x + 12,
+        y - 4,
+        8,
+        8
+    );
 
     /* nose */
 
     ctx.fillStyle = "#ffffff";
 
-    ctx.fillRect(x + 20, y - 1, 5, 2);
-
-    /* wings */
-
-    ctx.fillStyle = "#6e7fa8";
-
-    ctx.fillRect(x - 9, y - 8, 9, 5);
-    ctx.fillRect(x - 9, y + 3, 9, 5);
+    ctx.fillRect(
+        x + 19,
+        y - 1,
+        6,
+        2
+    );
 
     /* cockpit */
 
-    ctx.fillStyle = "#32d9ff";
+    ctx.fillStyle = "#29d9ff";
 
-    ctx.fillRect(x + 2, y - 4, 6, 8);
+    ctx.fillRect(
+        x + 2,
+        y - 4,
+        7,
+        8
+    );
 
-    ctx.fillStyle = "#baf7ff";
-    ctx.fillRect(x + 4, y - 3, 2, 2);
+    ctx.fillStyle = "#b9f8ff";
 
-    /* engine */
-
-    ctx.fillStyle = "#ff9d2e";
-
-    ctx.fillRect(x - 13, y - 3, 5, 6);
-
-    ctx.fillStyle = "#fff05a";
-
-    ctx.fillRect(x - 18, y - 2, 5, 4);
+    ctx.fillRect(
+        x + 4,
+        y - 3,
+        2,
+        2
+    );
 
     ctx.restore();
 
@@ -803,9 +919,10 @@ function drawShip() {
     }
 }
 
-/* =========================
+
+/* =====================================================
    SHIELD
-========================= */
+===================================================== */
 
 function drawShield() {
 
@@ -818,33 +935,19 @@ function drawShield() {
 
     ctx.save();
 
-    ctx.strokeStyle = "#4fdcff";
+    ctx.strokeStyle = "#4bdcff";
     ctx.lineWidth = 2;
 
     ctx.globalAlpha =
-        0.55 + Math.sin(performance.now() * 0.01) * 0.15;
+        0.65 +
+        Math.sin(performance.now() * 0.01) * 0.15;
 
     ctx.beginPath();
 
     ctx.arc(
-        ship.x + 3,
+        ship.x + 2,
         ship.y,
-        22 + pulse,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.stroke();
-
-    ctx.strokeStyle = "#a9f5ff";
-    ctx.globalAlpha *= 0.5;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        ship.x + 3,
-        ship.y,
-        25 + pulse,
+        23 + pulse,
         0,
         Math.PI * 2
     );
@@ -854,47 +957,48 @@ function drawShield() {
     ctx.restore();
 }
 
-/* =========================
+
+/* =====================================================
    SPEED TRAIL
-========================= */
+===================================================== */
 
 function drawSpeedTrail() {
 
-    const baseX = ship.x - 16;
-    const baseY = ship.y;
-
     ctx.save();
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 14; i++) {
 
         const offset =
-            (speedAnimationTime * 130 + i * 23) % 115;
-
-        const length =
-            8 + (i % 4) * 5;
+            (speedAnimation * 120 + i * 22) % 120;
 
         const x =
-            baseX - offset;
+            ship.x - 18 - offset;
 
         const y =
-            baseY + ((i % 5) - 2) * 4;
+            ship.y +
+            ((i % 5) - 2) * 4;
 
-        const mix =
-            (Math.sin(speedAnimationTime * 8 + i) + 1) / 2;
+        const length =
+            8 + (i % 4) * 4;
 
-        const r = Math.round(255 * (1 - mix));
-        const g = Math.round(220 + 35 * mix);
-        const b = Math.round(30 + 30 * mix);
+        const green =
+            Math.floor(
+                180 +
+                Math.sin(speedAnimation * 7 + i) * 60
+            );
 
         ctx.fillStyle =
-            "rgb(" + r + "," + g + "," + b + ")";
+            "rgb(255," +
+            green +
+            ",40)";
 
         ctx.globalAlpha =
-            0.25 + (1 - offset / 115) * 0.55;
+            0.15 +
+            (1 - offset / 120) * 0.65;
 
         ctx.fillRect(
-            Math.round(x),
-            Math.round(y),
+            Math.floor(x),
+            Math.floor(y),
             length,
             2
         );
@@ -903,25 +1007,27 @@ function drawSpeedTrail() {
     ctx.restore();
 }
 
-/* =========================
+
+/* =====================================================
    ASTEROIDS
-========================= */
+===================================================== */
 
 function spawnAsteroid() {
 
-    const radius = random(10, 23);
+    const radius =
+        rand(10, 22);
 
-    const points = randomInt(7, 10);
+    const count = 8;
 
     const vertices = [];
 
-    for (let i = 0; i < points; i++) {
+    for (let i = 0; i < count; i++) {
 
         const angle =
-            (Math.PI * 2 / points) * i;
+            (Math.PI * 2 / count) * i;
 
         const r =
-            radius * random(0.72, 1.18);
+            radius * rand(0.72, 1.18);
 
         vertices.push({
             x: Math.cos(angle) * r,
@@ -930,59 +1036,69 @@ function spawnAsteroid() {
     }
 
     asteroids.push({
+
         x: W + radius,
-        y: random(25, H - 25),
+
+        y: rand(
+            25,
+            H - 25
+        ),
+
         radius,
-        speed: random(55, 105),
-        rotation: random(0, Math.PI * 2),
-        rotationSpeed: random(-1.2, 1.2),
+
+        speed: rand(55, 105),
+
+        rotation: rand(0, Math.PI * 2),
+
+        rotationSpeed: rand(-1, 1),
+
         vertices
     });
 }
 
-/* =========================
-   DRAW ASTEROID
-========================= */
 
 function drawAsteroid(a) {
 
     ctx.save();
 
     ctx.translate(
-        Math.round(a.x),
-        Math.round(a.y)
+        Math.floor(a.x),
+        Math.floor(a.y)
     );
 
     ctx.rotate(a.rotation);
 
-    ctx.fillStyle = "#6b7280";
+    ctx.fillStyle = "#686e7a";
 
     ctx.beginPath();
 
-    a.vertices.forEach((v, i) => {
+    for (let i = 0; i < a.vertices.length; i++) {
+
+        const v =
+            a.vertices[i];
 
         if (i === 0) {
             ctx.moveTo(v.x, v.y);
         } else {
             ctx.lineTo(v.x, v.y);
         }
-
-    });
+    }
 
     ctx.closePath();
+
     ctx.fill();
 
-    ctx.strokeStyle = "#9ca3af";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#9ba2ad";
+
     ctx.stroke();
 
     /* craters */
 
-    ctx.fillStyle = "#414754";
+    ctx.fillStyle = "#454a54";
 
     ctx.fillRect(
         -a.radius * 0.45,
-        -a.radius * 0.2,
+        -a.radius * 0.25,
         5,
         4
     );
@@ -995,54 +1111,63 @@ function drawAsteroid(a) {
     );
 
     ctx.fillRect(
-        a.radius * 0.15,
         a.radius * 0.2,
-        6,
-        5
-    );
-
-    ctx.fillRect(
-        -a.radius * 0.55,
-        a.radius * 0.35,
-        4,
-        3
+        a.radius * 0.2,
+        5,
+        4
     );
 
     ctx.restore();
 }
 
-/* =========================
+
+/* =====================================================
    COINS
-========================= */
+===================================================== */
 
 function spawnCoin() {
 
     coins.push({
+
         x: W + 10,
-        y: random(25, H - 25),
-        speed: random(70, 105),
-        rotation: random(0, Math.PI * 2),
-        rotationSpeed: random(4, 8),
+
+        y: rand(
+            25,
+            H - 25
+        ),
+
+        speed: rand(70, 100),
+
+        rotation: rand(
+            0,
+            Math.PI * 2
+        ),
+
+        rotationSpeed: rand(5, 8),
+
         radius: 6
     });
 }
+
 
 function drawCoin(c) {
 
     ctx.save();
 
     ctx.translate(
-        Math.round(c.x),
-        Math.round(c.y)
+        Math.floor(c.x),
+        Math.floor(c.y)
     );
 
     const width =
         Math.max(
             2,
-            Math.abs(Math.cos(c.rotation)) * 6
+            Math.abs(
+                Math.cos(c.rotation)
+            ) * 7
         );
 
-    ctx.fillStyle = "#ffe44d";
+    ctx.fillStyle = "#ffe344";
 
     ctx.fillRect(
         -width / 2,
@@ -1051,21 +1176,25 @@ function drawCoin(c) {
         12
     );
 
-    ctx.fillStyle = "#fff6a3";
+    ctx.fillStyle = "#fff7a6";
 
     ctx.fillRect(
         -width / 2,
         -4,
-        Math.max(1, width / 2),
+        Math.max(
+            1,
+            width / 2
+        ),
         2
     );
 
     ctx.restore();
 }
 
-/* =========================
+
+/* =====================================================
    POWERUPS
-========================= */
+===================================================== */
 
 function spawnPowerup() {
 
@@ -1075,204 +1204,280 @@ function spawnPowerup() {
             : "speed";
 
     powerups.push({
+
         x: W + 15,
-        y: random(30, H - 30),
+
+        y: rand(
+            30,
+            H - 30
+        ),
+
         speed: 75,
-        type,
-        pulse: random(0, Math.PI * 2)
+
+        type
     });
 }
+
 
 function drawPowerup(p) {
 
     ctx.save();
 
     ctx.translate(
-        Math.round(p.x),
-        Math.round(p.y)
+        Math.floor(p.x),
+        Math.floor(p.y)
     );
-
-    const pulse =
-        Math.sin(performance.now() * 0.006 + p.pulse) * 1.5;
 
     if (p.type === "shield") {
 
-        ctx.fillStyle = "#3dc9ff";
+        /* pixel shield */
 
-        ctx.beginPath();
+        ctx.fillStyle = "#45d8ff";
 
-        ctx.moveTo(0, -9 - pulse);
-        ctx.lineTo(8, -5);
-        ctx.lineTo(7, 4);
-        ctx.lineTo(0, 10);
-        ctx.lineTo(-7, 4);
-        ctx.lineTo(-8, -5);
+        ctx.fillRect(
+            -3,
+            -9,
+            6,
+            18
+        );
 
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillRect(
+            -7,
+            -5,
+            14,
+            10
+        );
 
-        ctx.fillStyle = "#bdf5ff";
+        ctx.fillStyle = "#aaf4ff";
 
-        ctx.fillRect(-2, -5, 4, 8);
+        ctx.fillRect(
+            -2,
+            -5,
+            4,
+            10
+        );
 
     } else {
 
+        /* speed arrows */
+
         ctx.fillStyle = "#ffe600";
 
-        /* first arrow */
+        ctx.fillRect(
+            -10,
+            -6,
+            8,
+            3
+        );
 
-        ctx.fillRect(-9, -5, 7, 3);
-        ctx.fillRect(-5, -2, 7, 3);
-        ctx.fillRect(-2, 1, 4, 3);
+        ctx.fillRect(
+            -5,
+            -3,
+            8,
+            3
+        );
 
-        /* second arrow */
+        ctx.fillRect(
+            -1,
+            0,
+            6,
+            3
+        );
 
-        ctx.fillRect(1, -5, 7, 3);
-        ctx.fillRect(5, -2, 7, 3);
-        ctx.fillRect(8, 1, 4, 3);
+        ctx.fillRect(
+            2,
+            -6,
+            8,
+            3
+        );
+
+        ctx.fillRect(
+            7,
+            -3,
+            8,
+            3
+        );
+
+        ctx.fillRect(
+            11,
+            0,
+            5,
+            3
+        );
     }
 
     ctx.restore();
 }
 
-/* =========================
-   BULLETS
-========================= */
 
-function fireBullet() {
+/* =====================================================
+   BULLETS
+===================================================== */
+
+function nearestAsteroid() {
+
+    let target = null;
+    let best = Infinity;
+
+    for (const asteroid of asteroids) {
+
+        if (
+            asteroid.x <
+            ship.x - 10
+        ) {
+            continue;
+        }
+
+        const dx =
+            asteroid.x - ship.x;
+
+        const dy =
+            asteroid.y - ship.y;
+
+        const distance =
+            dx * dx + dy * dy;
+
+        if (distance < best) {
+
+            best = distance;
+            target = asteroid;
+        }
+    }
+
+    return target;
+}
+
+
+function shoot() {
 
     if (fireTimer > 0) {
         return;
     }
 
-    fireTimer = ship.fireDelay;
+    fireTimer = 0.28;
 
-    let vx = 300;
+    let vx = 330;
     let vy = 0;
 
     if (autoAim) {
 
-        const target = findNearestAsteroid();
+        const target =
+            nearestAsteroid();
 
         if (target) {
 
-            const dx = target.x - ship.x;
-            const dy = target.y - ship.y;
+            const dx =
+                target.x - ship.x;
 
-            const length =
-                Math.sqrt(dx * dx + dy * dy) || 1;
+            const dy =
+                target.y - ship.y;
 
-            vx = (dx / length) * 320;
-            vy = (dy / length) * 320;
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                ) || 1;
+
+            vx =
+                dx / distance * 330;
+
+            vy =
+                dy / distance * 330;
         }
     }
 
     bullets.push({
-        x: ship.x + 23,
+
+        x: ship.x + 24,
+
         y: ship.y,
+
         vx,
         vy,
+
         life: 2
     });
 }
 
+
 function drawBullet(b) {
-
-    ctx.fillStyle = "#fff5a0";
-
-    ctx.fillRect(
-        Math.round(b.x),
-        Math.round(b.y),
-        5,
-        2
-    );
 
     ctx.fillStyle = "#ffffff";
 
     ctx.fillRect(
-        Math.round(b.x - 2),
-        Math.round(b.y),
-        2,
+        Math.floor(b.x),
+        Math.floor(b.y),
+        6,
+        2
+    );
+
+    ctx.fillStyle = "#ffe35a";
+
+    ctx.fillRect(
+        Math.floor(b.x + 3),
+        Math.floor(b.y),
+        4,
         2
     );
 }
 
-/* =========================
-   AUTO AIM
-========================= */
 
-function findNearestAsteroid() {
-
-    let nearest = null;
-    let nearestDistance = Infinity;
-
-    for (const a of asteroids) {
-
-        if (a.x < ship.x - 10) {
-            continue;
-        }
-
-        const dx = a.x - ship.x;
-        const dy = a.y - ship.y;
-
-        const distance =
-            dx * dx + dy * dy;
-
-        if (distance < nearestDistance) {
-            nearestDistance = distance;
-            nearest = a;
-        }
-    }
-
-    return nearest;
-}
-
-/* =========================
+/* =====================================================
    PARTICLES
-========================= */
+===================================================== */
 
-function createParticles(
+function particlesCreate(
     x,
     y,
-    count,
-    type = "normal"
+    amount,
+    type
 ) {
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < amount; i++) {
 
         particles.push({
+
             x,
             y,
-            vx: random(-100, 100),
-            vy: random(-100, 100),
-            life: random(0.3, 0.7),
-            size: randomInt(1, 3),
+
+            vx: rand(-100, 100),
+            vy: rand(-100, 100),
+
+            life: rand(0.25, 0.65),
+
+            size:
+                Math.random() < 0.7
+                    ? 2
+                    : 3,
+
             type
         });
     }
 }
 
+
 function drawParticle(p) {
 
     if (p.type === "shield") {
-        ctx.fillStyle = "#61e8ff";
+        ctx.fillStyle = "#62e7ff";
     } else {
-        ctx.fillStyle = "#ffcc55";
+        ctx.fillStyle = "#ffd34d";
     }
 
     ctx.fillRect(
-        Math.round(p.x),
-        Math.round(p.y),
+        Math.floor(p.x),
+        Math.floor(p.y),
         p.size,
         p.size
     );
 }
 
-/* =========================
-   COLLISION
-========================= */
 
-function circleCollision(
+/* =====================================================
+   COLLISION
+===================================================== */
+
+function collision(
     x1,
     y1,
     r1,
@@ -1281,73 +1486,78 @@ function circleCollision(
     r2
 ) {
 
-    const dx = x1 - x2;
-    const dy = y1 - y2;
+    const dx =
+        x1 - x2;
+
+    const dy =
+        y1 - y2;
 
     return (
-        dx * dx + dy * dy <=
-        (r1 + r2) * (r1 + r2)
+        dx * dx +
+        dy * dy <=
+        (r1 + r2) *
+        (r1 + r2)
     );
 }
 
-/* =========================
-   ASTEROID HIT
-========================= */
 
-function hitAsteroid(index) {
+/* =====================================================
+   SHIP / ASTEROID COLLISION
+===================================================== */
 
-    const a = asteroids[index];
+function asteroidHit(index) {
 
-    if (!a) {
+    const asteroid =
+        asteroids[index];
+
+    if (!asteroid) {
         return;
     }
 
     /*
         ЩИТ:
 
-        При столкновении:
-        - жизнь НЕ теряется;
-        - щит НЕ исчезает;
-        - shieldTimer НЕ меняется;
-        - астероид уничтожается;
-        - следующие столкновения тоже будут защищены,
-          пока не закончится исходные 5 секунд.
+        - столкновение не снимает щит;
+        - таймер не меняется;
+        - жизнь не теряется;
+        - астероид уничтожается.
+
+        Щит продолжает работать до окончания
+        своих исходных 5 секунд.
     */
 
     if (shieldTimer > 0) {
 
-        createParticles(
-            a.x,
-            a.y,
+        particlesCreate(
+            asteroid.x,
+            asteroid.y,
             18,
             "shield"
         );
 
-        asteroids.splice(index, 1);
+        asteroids.splice(
+            index,
+            1
+        );
 
-        /*
-            Небольшая защита от повторной обработки
-            этого же столкновения.
-            Сам таймер щита НЕ трогаем.
-        */
-
-        invulnerabilityTimer = 0.15;
-
-        updateHUD();
+        invulnerabilityTimer = 0.12;
 
         return;
     }
 
     /* обычное столкновение */
 
-    createParticles(
-        a.x,
-        a.y,
-        12,
+    particlesCreate(
+        asteroid.x,
+        asteroid.y,
+        14,
         "normal"
     );
 
-    asteroids.splice(index, 1);
+    asteroids.splice(
+        index,
+        1
+    );
 
     if (invulnerabilityTimer > 0) {
         return;
@@ -1360,33 +1570,36 @@ function hitAsteroid(index) {
     updateHUD();
 
     if (lives <= 0) {
-        showGameOver();
+        gameOver();
     }
 }
 
-/* =========================
+
+/* =====================================================
    UPDATE SHIP
-========================= */
+===================================================== */
 
 function updateShip(dt) {
 
     let direction = 0;
 
-    if (keys.up) {
-        direction -= 1;
+    if (input.up) {
+        direction--;
     }
 
-    if (keys.down) {
-        direction += 1;
+    if (input.down) {
+        direction++;
     }
 
-    const speedMultiplier =
-        speedTimer > 0 ? 1.75 : 1;
+    const multiplier =
+        speedTimer > 0
+            ? 1.75
+            : 1;
 
     ship.y +=
         direction *
         ship.speed *
-        speedMultiplier *
+        multiplier *
         dt;
 
     if (ship.y < 15) {
@@ -1397,290 +1610,332 @@ function updateShip(dt) {
         ship.y = H - 15;
     }
 
-    speedAnimationTime += dt;
+    speedAnimation += dt;
 }
 
-/* =========================
+
+/* =====================================================
    UPDATE BULLETS
-========================= */
+===================================================== */
 
 function updateBullets(dt) {
 
-    for (let i = bullets.length - 1; i >= 0; i--) {
+    for (
+        let i = bullets.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        const b = bullets[i];
+        const bullet =
+            bullets[i];
 
-        b.x += b.vx * dt;
-        b.y += b.vy * dt;
+        bullet.x +=
+            bullet.vx * dt;
 
-        b.life -= dt;
+        bullet.y +=
+            bullet.vy * dt;
 
-        let destroyed = false;
+        bullet.life -= dt;
 
-        for (let j = asteroids.length - 1; j >= 0; j--) {
+        let hit = false;
 
-            const a = asteroids[j];
+        for (
+            let j = asteroids.length - 1;
+            j >= 0;
+            j--
+        ) {
+
+            const asteroid =
+                asteroids[j];
 
             if (
-                circleCollision(
-                    b.x,
-                    b.y,
+                collision(
+                    bullet.x,
+                    bullet.y,
                     3,
-                    a.x,
-                    a.y,
-                    a.radius
+                    asteroid.x,
+                    asteroid.y,
+                    asteroid.radius
                 )
             ) {
 
-                createParticles(
-                    a.x,
-                    a.y,
-                    10,
+                particlesCreate(
+                    asteroid.x,
+                    asteroid.y,
+                    12,
                     "normal"
                 );
 
-                asteroids.splice(j, 1);
-                bullets.splice(i, 1);
+                asteroids.splice(
+                    j,
+                    1
+                );
+
+                bullets.splice(
+                    i,
+                    1
+                );
 
                 score += 10;
 
-                destroyed = true;
+                updateHUD();
+
+                hit = true;
 
                 break;
             }
         }
 
-        if (destroyed) {
+        if (hit) {
             continue;
         }
 
         if (
-            b.life <= 0 ||
-            b.x > W + 20 ||
-            b.x < -20 ||
-            b.y < -20 ||
-            b.y > H + 20
+            bullet.life <= 0 ||
+            bullet.x > W + 30 ||
+            bullet.y < -30 ||
+            bullet.y > H + 30
         ) {
-            bullets.splice(i, 1);
+
+            bullets.splice(
+                i,
+                1
+            );
         }
     }
 }
 
-/* =========================
+
+/* =====================================================
    UPDATE ASTEROIDS
-========================= */
+===================================================== */
 
 function updateAsteroids(dt) {
 
-    for (let i = asteroids.length - 1; i >= 0; i--) {
+    for (
+        let i = asteroids.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        const a = asteroids[i];
+        const asteroid =
+            asteroids[i];
 
-        a.x -= a.speed * dt;
+        asteroid.x -=
+            asteroid.speed * dt;
 
-        a.rotation +=
-            a.rotationSpeed * dt;
+        asteroid.rotation +=
+            asteroid.rotationSpeed * dt;
 
         if (
-            circleCollision(
+            collision(
                 ship.x,
                 ship.y,
                 11,
-                a.x,
-                a.y,
-                a.radius
+                asteroid.x,
+                asteroid.y,
+                asteroid.radius
             )
         ) {
 
-            hitAsteroid(i);
+            asteroidHit(i);
 
             continue;
         }
 
-        if (a.x < -50) {
-            asteroids.splice(i, 1);
+        if (asteroid.x < -50) {
+
+            asteroids.splice(
+                i,
+                1
+            );
         }
     }
 }
 
-/* =========================
+
+/* =====================================================
    UPDATE COINS
-========================= */
+===================================================== */
 
 function updateCoins(dt) {
 
-    for (let i = coins.length - 1; i >= 0; i--) {
+    for (
+        let i = coins.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        const c = coins[i];
+        const coin =
+            coins[i];
 
-        c.x -= c.speed * dt;
+        coin.x -=
+            coin.speed * dt;
 
-        c.rotation +=
-            c.rotationSpeed * dt;
+        coin.rotation +=
+            coin.rotationSpeed * dt;
 
         if (
-            circleCollision(
+            collision(
                 ship.x,
                 ship.y,
                 12,
-                c.x,
-                c.y,
-                c.radius
+                coin.x,
+                coin.y,
+                coin.radius
             )
-        {
+        ) {
 
             score += 25;
 
-            createParticles(
-                c.x,
-                c.y,
+            particlesCreate(
+                coin.x,
+                coin.y,
                 8,
                 "normal"
             );
 
-            coins.splice(i, 1);
-
-            continue;
-        }
-
-        if (c.x < -20) {
-            coins.splice(i, 1);
-        }
-    }
-}
-
-/* =========================
-   UPDATE POWERUPS
-========================= */
-
-function updatePowerups(dt) {
-
-    for (let i = powerups.length - 1; i >= 0; i--) {
-
-        const p = powerups[i];
-
-        p.x -= p.speed * dt;
-
-        if (
-            circleCollision(
-                ship.x,
-                ship.y,
-                13,
-                p.x,
-                p.y,
-                11
-            )
-        {
-
-            if (p.type === "shield") {
-
-                /*
-                    Щит ВСЕГДА получает новые полные 5 секунд.
-                */
-
-                shieldTimer = 5;
-
-                createParticles(
-                    p.x,
-                    p.y,
-                    15,
-                    "shield"
-                );
-
-            } else {
-
-                /*
-                    Скорость получает полные 5 секунд.
-                */
-
-                speedTimer = 5;
-
-                createParticles(
-                    p.x,
-                    p.y,
-                    15,
-                    "normal"
-                );
-            }
-
-            powerups.splice(i, 1);
+            coins.splice(
+                i,
+                1
+            );
 
             updateHUD();
 
             continue;
         }
 
-        if (p.x < -25) {
-            powerups.splice(i, 1);
+        if (coin.x < -20) {
+
+            coins.splice(
+                i,
+                1
+            );
         }
     }
 }
 
-/* =========================
+
+/* =====================================================
+   UPDATE POWERUPS
+===================================================== */
+
+function updatePowerups(dt) {
+
+    for (
+        let i = powerups.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const power =
+            powerups[i];
+
+        power.x -=
+            power.speed * dt;
+
+        if (
+            collision(
+                ship.x,
+                ship.y,
+                13,
+                power.x,
+                power.y,
+                11
+            )
+        ) {
+
+            if (
+                power.type ===
+                "shield"
+            ) {
+
+                /*
+                    Всегда полные 5 секунд.
+                */
+
+                shieldTimer = 5;
+
+                particlesCreate(
+                    power.x,
+                    power.y,
+                    18,
+                    "shield"
+                );
+
+            } else {
+
+                speedTimer = 5;
+
+                particlesCreate(
+                    power.x,
+                    power.y,
+                    18,
+                    "normal"
+                );
+            }
+
+            powerups.splice(
+                i,
+                1
+            );
+
+            updateHUD();
+
+            continue;
+        }
+
+        if (power.x < -30) {
+
+            powerups.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+/* =====================================================
    UPDATE PARTICLES
-========================= */
+===================================================== */
 
 function updateParticles(dt) {
 
-    for (let i = particles.length - 1; i >= 0; i--) {
+    for (
+        let i = particles.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        const p = particles[i];
+        const particle =
+            particles[i];
 
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
+        particle.x +=
+            particle.vx * dt;
 
-        p.vx *= 0.97;
-        p.vy *= 0.97;
+        particle.y +=
+            particle.vy * dt;
 
-        p.life -= dt;
+        particle.vx *= 0.97;
+        particle.vy *= 0.97;
 
-        if (p.life <= 0) {
-            particles.splice(i, 1);
+        particle.life -= dt;
+
+        if (particle.life <= 0) {
+
+            particles.splice(
+                i,
+                1
+            );
         }
     }
 }
 
-/* =========================
-   UPDATE STARS
-========================= */
 
-function updateStars(dt) {
-
-    for (const s of stars) {
-
-        s.x -= s.speed * dt;
-
-        if (s.x < 0) {
-
-            s.x = W;
-
-            s.y = random(0, H);
-        }
-    }
-}
-
-function drawStars() {
-
-    for (const s of stars) {
-
-        ctx.globalAlpha = s.brightness;
-
-        ctx.fillStyle = "#ffffff";
-
-        ctx.fillRect(
-            Math.round(s.x),
-            Math.round(s.y),
-            s.size,
-            s.size
-        );
-    }
-
-    ctx.globalAlpha = 1;
-}
-
-/* =========================
+/* =====================================================
    TIMERS
-========================= */
+===================================================== */
 
 function updateTimers(dt) {
 
@@ -1713,20 +1968,21 @@ function updateTimers(dt) {
     updateHUD();
 }
 
-/* =========================
-   SPAWN SYSTEM
-========================= */
+
+/* =====================================================
+   SPAWN
+===================================================== */
 
 function updateSpawning(dt) {
 
-    spawnTimer -= dt;
+    asteroidTimer -= dt;
 
-    if (spawnTimer <= 0) {
+    if (asteroidTimer <= 0) {
 
         spawnAsteroid();
 
-        spawnTimer =
-            random(0.55, 1.15);
+        asteroidTimer =
+            rand(0.55, 1.1);
     }
 
     coinTimer -= dt;
@@ -1736,7 +1992,7 @@ function updateSpawning(dt) {
         spawnCoin();
 
         coinTimer =
-            random(2.2, 4.2);
+            rand(2, 4);
     }
 
     powerupTimer -= dt;
@@ -1746,97 +2002,98 @@ function updateSpawning(dt) {
         spawnPowerup();
 
         powerupTimer =
-            random(6, 11);
+            rand(6, 10);
     }
 }
 
-/* =========================
-   DRAW EVERYTHING
-========================= */
+
+/* =====================================================
+   DRAW GAME
+===================================================== */
 
 function drawGame() {
 
-    ctx.clearRect(0, 0, W, H);
-
-    /* background */
-
     ctx.fillStyle = "#02030a";
-    ctx.fillRect(0, 0, W, H);
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 
     drawStars();
 
-    /* asteroids */
-
-    for (const a of asteroids) {
-        drawAsteroid(a);
+    for (const asteroid of asteroids) {
+        drawAsteroid(asteroid);
     }
 
-    /* coins */
-
-    for (const c of coins) {
-        drawCoin(c);
+    for (const coin of coins) {
+        drawCoin(coin);
     }
 
-    /* powerups */
-
-    for (const p of powerups) {
-        drawPowerup(p);
+    for (const power of powerups) {
+        drawPowerup(power);
     }
 
-    /* bullets */
-
-    for (const b of bullets) {
-        drawBullet(b);
+    for (const bullet of bullets) {
+        drawBullet(bullet);
     }
 
-    /* particles */
-
-    for (const p of particles) {
-        drawParticle(p);
+    for (const particle of particles) {
+        drawParticle(particle);
     }
-
-    /* ship */
 
     drawShip();
 }
 
-/* =========================
-   MAIN LOOP
-========================= */
 
-function gameLoop(timestamp) {
+/* =====================================================
+   GAME LOOP
+===================================================== */
 
-    if (!gameRunning) {
+function gameLoop(time) {
+
+    if (!running) {
         return;
     }
 
-    if (!lastTime) {
-        lastTime = timestamp;
+    if (lastTime === 0) {
+        lastTime = time;
     }
 
     let dt =
-        (timestamp - lastTime) / 1000;
+        (time - lastTime) / 1000;
 
-    lastTime = timestamp;
+    lastTime = time;
 
-    dt = Math.min(dt, 0.04);
+    if (dt > 0.04) {
+        dt = 0.04;
+    }
 
     if (!paused) {
 
         updateTimers(dt);
+
         updateShip(dt);
+
         updateBullets(dt);
+
         updateAsteroids(dt);
+
         updateCoins(dt);
+
         updatePowerups(dt);
+
         updateParticles(dt);
+
         updateStars(dt);
+
         updateSpawning(dt);
 
-        if (keys.fire) {
-            fireBullet();
+        if (input.fire) {
+            shoot();
         }
-
     }
 
     drawGame();
@@ -1844,81 +2101,106 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-/* =========================
-   START
-========================= */
+
+/* =====================================================
+   START GAME
+===================================================== */
 
 function startGame() {
 
+    console.log("START GAME");
+
     resetGame();
 
-    gameRunning = true;
+    running = true;
     paused = false;
 
-    startOverlay.classList.add("hidden");
-    pauseOverlay.classList.add("hidden");
-    gameOverOverlay.classList.add("hidden");
+    startScreen.classList.add(
+        "hidden"
+    );
 
-    lastTime = performance.now();
+    pauseScreen.classList.add(
+        "hidden"
+    );
 
-    requestAnimationFrame(gameLoop);
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+    lastTime = 0;
+
+    requestAnimationFrame(
+        gameLoop
+    );
 }
 
-/* =========================
+
+/* =====================================================
    PAUSE
-========================= */
+===================================================== */
 
 function pauseGame() {
 
-    if (!gameRunning) {
+    if (!running) {
         return;
     }
 
     paused = true;
 
-    pauseOverlay.classList.remove("hidden");
+    pauseScreen.classList.remove(
+        "hidden"
+    );
 }
+
 
 function resumeGame() {
 
-    if (!gameRunning) {
+    if (!running) {
         return;
     }
 
     paused = false;
 
-    pauseOverlay.classList.add("hidden");
+    pauseScreen.classList.add(
+        "hidden"
+    );
 
     lastTime = performance.now();
 }
 
-/* =========================
+
+/* =====================================================
    GAME OVER
-========================= */
+===================================================== */
 
-function showGameOver() {
+function gameOver() {
 
-    gameRunning = false;
+    running = false;
     paused = false;
 
-    keys.up = false;
-    keys.down = false;
-    keys.fire = false;
+    input.up = false;
+    input.down = false;
+    input.fire = false;
 
-    finalScore.textContent =
+    finalScoreElement.textContent =
         "SCORE: " + score;
 
-    gameOverOverlay.classList.remove("hidden");
+    gameOverScreen.classList.remove(
+        "hidden"
+    );
 }
 
-/* =========================
+
+/* =====================================================
    CHEAT
-========================= */
+===================================================== */
 
 function activateCheat() {
 
     const code =
-        cheatInput.value.trim().toUpperCase();
+        cheatInput.value
+            .trim()
+            .toUpperCase();
 
     if (code === "ASTRO-AIM") {
 
@@ -1940,122 +2222,181 @@ function activateCheat() {
     }
 }
 
-/* =========================
-   BUTTON EVENTS
-========================= */
+
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 startButton.addEventListener(
     "click",
-    startGame
+    function(event) {
+
+        event.preventDefault();
+
+        startGame();
+    }
 );
+
 
 restartButton.addEventListener(
     "click",
-    startGame
+    function(event) {
+
+        event.preventDefault();
+
+        startGame();
+    }
 );
+
 
 pauseButton.addEventListener(
     "click",
-    pauseGame
+    function(event) {
+
+        event.preventDefault();
+
+        if (paused) {
+            resumeGame();
+        } else {
+            pauseGame();
+        }
+    }
 );
+
 
 resumeButton.addEventListener(
     "click",
-    resumeGame
+    function(event) {
+
+        event.preventDefault();
+
+        resumeGame();
+    }
 );
 
-activateCheatButton.addEventListener(
+
+cheatButton.addEventListener(
     "click",
-    activateCheat
+    function(event) {
+
+        event.preventDefault();
+
+        activateCheat();
+    }
 );
 
-/* =========================
-   TOUCH / POINTER CONTROLS
-========================= */
 
-function bindHoldButton(button, key) {
+/* =====================================================
+   TOUCH CONTROLS
+===================================================== */
+
+function holdButton(
+    button,
+    property
+) {
+
+    function start(event) {
+
+        event.preventDefault();
+
+        input[property] = true;
+
+        try {
+            button.setPointerCapture(
+                event.pointerId
+            );
+        } catch (error) {}
+    }
+
+    function stop(event) {
+
+        event.preventDefault();
+
+        input[property] = false;
+    }
 
     button.addEventListener(
         "pointerdown",
-        function(e) {
-
-            e.preventDefault();
-
-            keys[key] = true;
-
-            try {
-                button.setPointerCapture(e.pointerId);
-            } catch (_) {}
-        }
+        start
     );
-
-    const release = function(e) {
-
-        e.preventDefault();
-
-        keys[key] = false;
-    };
 
     button.addEventListener(
         "pointerup",
-        release
+        stop
     );
 
     button.addEventListener(
         "pointercancel",
-        release
+        stop
     );
 
     button.addEventListener(
-        "pointerleave",
-        function(e) {
-
-            if (e.buttons === 0) {
-                keys[key] = false;
-            }
-        }
+        "lostpointercapture",
+        stop
     );
 }
 
-bindHoldButton(upButton, "up");
-bindHoldButton(downButton, "down");
-bindHoldButton(fireButton, "fire");
 
-/* =========================
+holdButton(
+    upButton,
+    "up"
+);
+
+holdButton(
+    downButton,
+    "down"
+);
+
+holdButton(
+    fireButton,
+    "fire"
+);
+
+
+/* =====================================================
    KEYBOARD
-========================= */
+===================================================== */
 
 window.addEventListener(
     "keydown",
-    function(e) {
+    function(event) {
+
+        const key =
+            event.key.toLowerCase();
 
         if (
-            e.key === "ArrowUp" ||
-            e.key.toLowerCase() === "w"
+            key === "arrowup" ||
+            key === "w"
         ) {
-            keys.up = true;
-            e.preventDefault();
+
+            input.up = true;
+
+            event.preventDefault();
         }
 
         if (
-            e.key === "ArrowDown" ||
-            e.key.toLowerCase() === "s"
+            key === "arrowdown" ||
+            key === "s"
         ) {
-            keys.down = true;
-            e.preventDefault();
+
+            input.down = true;
+
+            event.preventDefault();
         }
 
         if (
-            e.key === " " ||
-            e.key.toLowerCase() === "f"
+            key === " " ||
+            key === "f"
         ) {
-            keys.fire = true;
-            e.preventDefault();
+
+            input.fire = true;
+
+            event.preventDefault();
         }
 
         if (
-            e.key === "Escape" ||
-            e.key.toLowerCase() === "p"
+            key === "p" ||
+            key === "escape"
         ) {
 
             if (paused) {
@@ -2064,57 +2405,64 @@ window.addEventListener(
                 pauseGame();
             }
 
-            e.preventDefault();
+            event.preventDefault();
         }
     }
 );
+
 
 window.addEventListener(
     "keyup",
-    function(e) {
+    function(event) {
+
+        const key =
+            event.key.toLowerCase();
 
         if (
-            e.key === "ArrowUp" ||
-            e.key.toLowerCase() === "w"
+            key === "arrowup" ||
+            key === "w"
         ) {
-            keys.up = false;
+            input.up = false;
         }
 
         if (
-            e.key === "ArrowDown" ||
-            e.key.toLowerCase() === "s"
+            key === "arrowdown" ||
+            key === "s"
         ) {
-            keys.down = false;
+            input.down = false;
         }
 
         if (
-            e.key === " " ||
-            e.key.toLowerCase() === "f"
+            key === " " ||
+            key === "f"
         ) {
-            keys.fire = false;
+            input.fire = false;
         }
     }
 );
 
-/* =========================
-   PREVENT LONG PRESS
-========================= */
+
+/* =====================================================
+   PREVENT LONG PRESS MENU
+===================================================== */
 
 document.addEventListener(
     "contextmenu",
-    function(e) {
+    function(event) {
 
-        if (e.target !== cheatInput) {
-            e.preventDefault();
+        if (
+            event.target !== cheatInput
+        ) {
+            event.preventDefault();
         }
     }
 );
 
-/* =========================
-   INITIALIZE
-========================= */
 
-createStars();
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
 resetGame();
 
 </script>
