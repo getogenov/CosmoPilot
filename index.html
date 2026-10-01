@@ -1,1 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Space Pilot</title>
 
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    background: #050713;
+    color: white;
+    font-family: monospace;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #050713;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+}
+
+/* Верхняя панель */
+
+#hud {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    color: white;
+    text-shadow: 2px 2px #000;
+
+    pointer-events: none;
+}
+
+#lives {
+    color: #ff5757;
+}
+
+/* Левая часть управления */
+
+#leftControls {
+    position: absolute;
+    left: 18px;
+    bottom: 25px;
+
+    display: flex;
+    gap: 10px;
+}
+
+.controlButton {
+    width: 64px;
+    height: 64px;
+
+    border: 2px solid rgba(255,255,255,0.45);
+    border-radius: 14px;
+
+    background: rgba(20,30,50,0.75);
+    color: white;
+
+    font-size: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.controlButton:active {
+    background: rgba(80,100,130,0.9);
+    transform: scale(0.94);
+}
+
+/* Кнопка огня */
+
+#fireButton {
+    position: absolute;
+    right: 22px;
+    bottom: 25px;
+
+    width: 85px;
+    height: 85px;
+
+    border-radius: 50%;
+
+    border: 3px solid rgba(255,255,255,0.6);
+
+    background: rgba(40,80,50,0.85);
+    color: white;
+
+    font-size: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#fireButton:active {
+    transform: scale(0.9);
+    background: rgba(70,130,70,0.95);
+}
+
+/* Стартовое меню */
+
+#menu {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(3,5,15,0.92);
+
+    z-index: 10;
+}
+
+#menu h1 {
+    margin: 0 0 10px;
+
+    font-size: 34px;
+    color: #61ff7b;
+
+    text-shadow:
+        3px 3px #173b1c;
+}
+
+#menu p {
+    margin: 5px 20px 25px;
+    text-align: center;
+    color: #b8c0d8;
+    line-height: 1.5;
+}
+
+#startButton {
+    padding: 15px 35px;
+
+    border: 2px solid #61ff7b;
+    border-radius: 10px;
+
+    background: #122516;
+    color: #61ff7b;
+
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#gameOver {
+    display: none;
+
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0,0,0,0.78);
+
+    z-index: 9;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+}
+
+#gameOver h2 {
+    color: #ff6666;
+    font-size: 30px;
+}
+
+#restartButton {
+    padding: 14px 28px;
+
+    border: 2px solid white;
+    border-radius: 10px;
+
+    background: #182033;
+    color: white;
+
+    font-family: monospace;
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<canvas id="canvas"></canvas>
+
+<div id="hud">
+    <div id="score">SCORE: 00000</div>
+    <div id="coins">⭐ 0</div>
+    <div id="lives">♥ ♥ ♥</div>
+</div>
+
+<div id="leftControls">
+
+    <button class="controlButton" id="upButton">
+        ▲
+    </button>
+
+    <button class="controlButton" id="downButton">
+        ▼
+    </button>
+
+</div>
+
+<button id="fireButton">
+    🔫
+</button>
+
+<div id="menu">
+
+    <h1>SPACE PILOT</h1>
+
+    <p>
+        Лети сквозь космос.<br>
+        Собирай звёздные монеты.<br>
+        Разрушай астероиды лазером!
+    </p>
+
+    <button id="startButton">
+        ▶ НАЧАТЬ
+    </button>
+
+</div>
+
+<div id="gameOver">
+
+    <h2>GAME OVER</h2>
+
+    <p id="finalScore"></p>
+
+    <button id="restartButton">
+        ↻ ЗАНОВО
+    </button>
+
+</div>
+
+</div>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W = 320;
+let H = 180;
+
+canvas.width = W;
+canvas.height = H;
+
+ctx.imageSmoothingEnabled = false;
+
+
+/* =========================
+   СОСТОЯНИЕ ИГРЫ
+========================= */
+
+let gameRunning = false;
+
+let score = 0;
+let coinCount = 0;
+let lives = 3;
+
+let frame = 0;
+
+let bullets = [];
+let asteroids = [];
+let coins = [];
+let stars = [];
+
+
+/* =========================
+   КОРАБЛЬ
+========================= */
+
+const ship = {
+
+    x: 42,
+    y: 90,
+
+    width: 25,
+    height: 18,
+
+    speed: 2.8
+
+};
+
+
+/* =========================
+   ЗВЁЗДЫ ФОНА
+========================= */
+
+function createStars() {
+
+    stars = [];
+
+    for(let i = 0; i < 70; i++) {
+
+        stars.push({
+
+            x: Math.random() * W,
+            y: Math.random() * H,
+
+            size: Math.random() > 0.8 ? 2 : 1,
+
+            speed:
+                0.3 +
+                Math.random() * 1.1
+
+        });
+
+    }
+
+}
+
+
+/* =========================
+   РИСОВАНИЕ ФОНА
+========================= */
+
+function drawBackground() {
+
+    ctx.fillStyle = "#050713";
+    ctx.fillRect(0,0,W,H);
+
+    for(const star of stars) {
+
+        star.x -= star.speed;
+
+        if(star.x < 0) {
+
+            star.x = W;
+            star.y = Math.random() * H;
+
+        }
+
+        ctx.fillStyle = "#8b9bb8";
+
+        ctx.fillRect(
+            Math.floor(star.x),
+            Math.floor(star.y),
+            star.size,
+            star.size
+        );
+
+    }
+
+}
+
+
+/* =========================
+   КОРАБЛЬ
+========================= */
+
+function drawShip() {
+
+    const x = Math.floor(ship.x);
+    const y = Math.floor(ship.y);
+
+    /*
+       Зелёный пиксельный корабль
+       в форме треугольника
+    */
+
+    ctx.fillStyle = "#54e86a";
+
+    ctx.beginPath();
+
+    ctx.moveTo(x, y + 9);
+
+    ctx.lineTo(x + 22, y);
+
+    ctx.lineTo(x + 25, y + 9);
+
+    ctx.lineTo(x + 22, y + 18);
+
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    /* тёмная кабина */
+
+    ctx.fillStyle = "#183d23";
+
+    ctx.fillRect(
+        x + 10,
+        y + 5,
+        8,
+        8
+    );
+
+
+    /* зелёное стекло */
+
+    ctx.fillStyle = "#9affaa";
+
+    ctx.fillRect(
+        x + 12,
+        y + 6,
+        5,
+        4
+    );
+
+
+    /* двигатель */
+
+    ctx.fillStyle = "#ffb52e";
+
+    ctx.fillRect(
+        x - 4,
+        y + 7,
+        5,
+        4
+    );
+
+}
+
+
+/* =========================
+   ЛАЗЕР
+========================= */
+
+function shoot() {
+
+    if(!gameRunning) return;
+
+    bullets.push({
+
+        x: ship.x + 23,
+
+        y: ship.y + 8,
+
+        width: 12,
+
+        height: 2,
+
+        speed: 6
+
+    });
+
+}
+
+
+function updateBullets() {
+
+    for(let i = bullets.length - 1; i >= 0; i--) {
+
+        bullets[i].x += bullets[i].speed;
+
+        if(bullets[i].x > W + 20) {
+
+            bullets.splice(i,1);
+
+        }
+
+    }
+
+}
+
+
+function drawBullets() {
+
+    for(const bullet of bullets) {
+
+        ctx.fillStyle = "#72e8ff";
+
+        ctx.fillRect(
+            bullet.x,
+            bullet.y,
+            bullet.width,
+            bullet.height
+        );
+
+        ctx.fillStyle = "#ffffff";
+
+        ctx.fillRect(
+            bullet.x + 4,
+            bullet.y,
+            5,
+            1
+        );
+
+    }
+
+}
+
+
+/* =========================
+   АСТЕРОИДЫ
+========================= */
+
+function createAsteroid() {
+
+    const radius =
+        7 +
+        Math.random() * 7;
+
+    asteroids.push({
+
+        x: W + radius,
+
+        y:
+            15 +
+            Math.random() *
+            (H - 30),
+
+        radius: radius,
+
+        speed:
+            1.1 +
+            Math.random() * 1.6,
+
+        rotation:
+            Math.random() * Math.PI * 2,
+
+        rotationSpeed:
+            (Math.random() - 0.5) * 0.03,
+
+        points: 8
+
+    });
+
+}
+
+
+/* =========================
+   РИСОВАНИЕ АСТЕРОИДА
+========================= */
+
+function drawAsteroid(a) {
+
+    ctx.save();
+
+    ctx.translate(a.x,a.y);
+
+    ctx.rotate(a.rotation);
+
+    /*
+       Неровная форма астероида
+    */
+
+    ctx.beginPath();
+
+    for(let i = 0; i < a.points; i++) {
+
+        const angle =
+            Math.PI * 2 *
+            i /
+            a.points;
+
+        const variation =
+            0.72 +
+            Math.sin(i * 4.3) * 0.15 +
+            Math.random() * 0.12;
+
+        const r =
+            a.radius *
+            variation;
+
+        const px =
+            Math.cos(angle) * r;
+
+        const py =
+            Math.sin(angle) * r;
+
+        if(i === 0)
+            ctx.moveTo(px,py);
+        else
+            ctx.lineTo(px,py);
+
+    }
+
+    ctx.closePath();
+
+    ctx.fillStyle = "#777b86";
+
+    ctx.fill();
+
+
+    /*
+       тёмные края
+    */
+
+    ctx.strokeStyle = "#3e414b";
+
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+
+    /*
+       кратеры
+    */
+
+    ctx.fillStyle = "#494c56";
+
+    ctx.fillRect(
+        -a.radius * 0.45,
+        -a.radius * 0.2,
+        4,
+        3
+    );
+
+    ctx.fillRect(
+        a.radius * 0.15,
+        -a.radius * 0.55,
+        3,
+        3
+    );
+
+    ctx.fillRect(
+        a.radius * 0.25,
+        a.radius * 0.2,
+        4,
+        3
+    );
+
+    ctx.fillStyle = "#979aa3";
+
+    ctx.fillRect(
+        -a.radius * 0.1,
+        -a.radius * 0.45,
+        2,
+        2
+    );
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   МОНЕТЫ
+========================= */
+
+function createCoin() {
+
+    coins.push({
+
+        x: W + 10,
+
+        y:
+            18 +
+            Math.random() *
+            (H - 36),
+
+        radius: 6,
+
+        speed: 1.7,
+
+        angle: 0,
+
+        rotationSpeed: 0.12
+
+    });
+
+}
+
+
+/* =========================
+   РИСОВАНИЕ МОНЕТЫ
+========================= */
+
+function drawCoin(c) {
+
+    ctx.save();
+
+    ctx.translate(c.x,c.y);
+
+    c.angle += c.rotationSpeed;
+
+    /*
+       Эффект вращения:
+       ширина круга меняется
+    */
+
+    const scaleX =
+        Math.abs(Math.cos(c.angle));
+
+    ctx.scale(
+        Math.max(0.2,scaleX),
+        1
+    );
+
+
+    /* золотой круг */
+
+    ctx.fillStyle = "#ffd43b";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        c.radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* край */
+
+    ctx.strokeStyle = "#b88612";
+
+    ctx.lineWidth = 1;
+
+    ctx.stroke();
+
+
+    /*
+       Звёздочка внутри
+    */
+
+    ctx.fillStyle = "#fff4a3";
+
+    ctx.beginPath();
+
+    for(let i = 0; i < 10; i++) {
+
+        const angle =
+            -Math.PI / 2 +
+            i * Math.PI / 5;
+
+        const radius =
+            i % 2 === 0 ? 4 : 1.8;
+
+        const x =
+            Math.cos(angle) *
+            radius;
+
+        const y =
+            Math.sin(angle) *
+            radius;
+
+        if(i === 0)
+            ctx.moveTo(x,y);
+        else
+            ctx.lineTo(x,y);
+
+    }
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.restore();
+
+}
+
+
+/* =========================
+   ДВИЖЕНИЕ
+========================= */
+
+let moveUp = false;
+let moveDown = false;
+
+
+function updateShip() {
+
+    if(moveUp)
+        ship.y -= ship.speed;
+
+    if(moveDown)
+        ship.y += ship.speed;
+
+
+    if(ship.y < 5)
+        ship.y = 5;
+
+    if(ship.y > H - ship.height - 5)
+        ship.y =
+            H - ship.height - 5;
+
+}
+
+
+/* =========================
+   СТОЛКНОВЕНИЯ
+========================= */
+
+function collision(a,b) {
+
+    return (
+
+        a.x < b.x + b.width &&
+
+        a.x + a.width > b.x &&
+
+        a.y < b.y + b.height &&
+
+        a.y + a.height > b.y
+
+    );
+
+}
+
+
+/* =========================
+   ОБНОВЛЕНИЕ
+========================= */
+
+function update() {
+
+    if(!gameRunning)
+        return;
+
+
+    frame++;
+
+
+    updateShip();
+
+    updateBullets();
+
+
+    /*
+       Создание астероидов
+    */
+
+    if(frame % 55 === 0) {
+
+        createAsteroid();
+
+    }
+
+
+    /*
+       Создание монет
+    */
+
+    if(frame % 90 === 0) {
+
+        createCoin();
+
+    }
+
+
+    /*
+       Астероиды
+    */
+
+    for(let i = asteroids.length - 1; i >= 0; i--) {
+
+        const a = asteroids[i];
+
+        a.x -= a.speed;
+
+        a.rotation += a.rotationSpeed;
+
+
+        if(a.x < -30) {
+
+            asteroids.splice(i,1);
+
+            continue;
+
+        }
+
+
+        /*
+           столкновение корабля
+        */
+
+        const asteroidBox = {
+
+            x:
+                a.x - a.radius,
+
+            y:
+                a.y - a.radius,
+
+            width:
+                a.radius * 2,
+
+            height:
+                a.radius * 2
+
+        };
+
+
+        if(collision(ship,asteroidBox)) {
+
+            asteroids.splice(i,1);
+
+            lives--;
+
+            updateHUD();
+
+
+            if(lives <= 0) {
+
+                endGame();
+
+            }
+
+            continue;
+
+        }
+
+
+        /*
+           попадание лазера
+        */
+
+        for(let j = bullets.length - 1; j >= 0; j--) {
+
+            const b = bullets[j];
+
+            const bulletBox = {
+
+                x: b.x,
+
+                y: b.y,
+
+                width: b.width,
+
+                height: b.height
+
+            };
+
+
+            if(collision(bulletBox,asteroidBox)) {
+
+                bullets.splice(j,1);
+
+                asteroids.splice(i,1);
+
+                score += 100;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+       Монеты
+    */
+
+    for(let i = coins.length - 1; i >= 0; i--) {
+
+        const c = coins[i];
+
+        c.x -= c.speed;
+
+
+        if(c.x < -20) {
+
+            coins.splice(i,1);
+
+            continue;
+
+        }
+
+
+        const coinBox = {
+
+            x:
+                c.x - c.radius,
+
+            y:
+                c.y - c.radius,
+
+            width:
+                c.radius * 2,
+
+            height:
+                c.radius * 2
+
+        };
+
+
+        if(collision(ship,coinBox)) {
+
+            coins.splice(i,1);
+
+            coinCount++;
+
+            score += 50;
+
+        }
+
+    }
+
+
+    updateHUD();
+
+}
+
+
+/* =========================
+   ОТРИСОВКА
+========================= */
+
+function draw() {
+
+    drawBackground();
+
+
+    for(const c of coins) {
+
+        drawCoin(c);
+
+    }
+
+
+    for(const a of asteroids) {
+
+        drawAsteroid(a);
+
+    }
+
+
+    drawBullets();
+
+    drawShip();
+
+}
+
+
+/* =========================
+   ИГРОВОЙ ЦИКЛ
+========================= */
+
+function gameLoop() {
+
+    update();
+
+    draw();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+function updateHUD() {
+
+    document.getElementById("score")
+        .textContent =
+        "SCORE: " +
+        String(score).padStart(5,"0");
+
+
+    document.getElementById("coins")
+        .textContent =
+        "⭐ " +
+        coinCount;
+
+
+    document.getElementById("lives")
+        .textContent =
+        "♥ ".repeat(lives) +
+        "♡ ".repeat(3 - lives);
+
+}
+
+
+/* =========================
+   ИГРА
+========================= */
+
+function startGame() {
+
+    score = 0;
+
+    coinCount = 0;
+
+    lives = 3;
+
+    frame = 0;
+
+    bullets = [];
+
+    asteroids = [];
+
+    coins = [];
+
+    ship.y = H / 2;
+
+    gameRunning = true;
+
+    document.getElementById("menu")
+        .style.display = "none";
+
+    document.getElementById("gameOver")
+        .style.display = "none";
+
+    updateHUD();
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function endGame() {
+
+    gameRunning = false;
+
+    document.getElementById("finalScore")
+        .textContent =
+        "Очки: " +
+        score +
+        "   Монеты: " +
+        coinCount;
+
+    document.getElementById("gameOver")
+        .style.display = "flex";
+
+}
+
+
+/* =========================
+   КНОПКИ
+========================= */
+
+function setupButton(button, down, up) {
+
+    button.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            e.preventDefault();
+
+            down();
+
+        }
+    );
+
+
+    button.addEventListener(
+        "pointerup",
+        function(e) {
+
+            e.preventDefault();
+
+            up();
+
+        }
+    );
+
+
+    button.addEventListener(
+        "pointercancel",
+        up
+    );
+
+
+    button.addEventListener(
+        "pointerleave",
+        up
+    );
+
+}
+
+
+setupButton(
+
+    document.getElementById("upButton"),
+
+    function() {
+        moveUp = true;
+    },
+
+    function() {
+        moveUp = false;
+    }
+
+);
+
+
+setupButton(
+
+    document.getElementById("downButton"),
+
+    function() {
+        moveDown = true;
+    },
+
+    function() {
+        moveDown = false;
+    }
+
+);
+
+
+/* Огонь */
+
+document.getElementById("fireButton")
+    .addEventListener(
+        "pointerdown",
+        function(e) {
+
+            e.preventDefault();
+
+            shoot();
+
+        }
+    );
+
+
+/* Старт */
+
+document.getElementById("startButton")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+/* Заново */
+
+document.getElementById("restartButton")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+/* =========================
+   КЛАВИАТУРА
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        if(e.key === "ArrowUp")
+            moveUp = true;
+
+        if(e.key === "ArrowDown")
+            moveDown = true;
+
+        if(e.code === "Space")
+            shoot();
+
+    }
+);
+
+
+document.addEventListener(
+    "keyup",
+    function(e) {
+
+        if(e.key === "ArrowUp")
+            moveUp = false;
+
+        if(e.key === "ArrowDown")
+            moveDown = false;
+
+    }
+);
+
+
+/* =========================
+   ЗАПУСК
+========================= */
+
+createStars();
+
+updateHUD();
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
