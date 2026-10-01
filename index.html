@@ -11,22 +11,35 @@
 <title>CosmoPilot</title>
 
 <style>
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
 * {
     box-sizing: border-box;
+
     -webkit-user-select: none;
     user-select: none;
+
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
-    margin: 0;
     width: 100%;
     height: 100%;
+
+    margin: 0;
+    padding: 0;
+
     overflow: hidden;
+
     background: #02030a;
+
     font-family: monospace;
+
     touch-action: none;
 }
 
@@ -38,11 +51,18 @@ canvas {
 input {
     -webkit-user-select: text;
     user-select: text;
+
     -webkit-touch-callout: default;
 }
 
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
 #gameCanvas {
     position: fixed;
+
     left: 50%;
     top: 50%;
 
@@ -57,56 +77,81 @@ input {
     image-rendering: crisp-edges;
 }
 
+
+/* =====================================================
+   CREATOR
+===================================================== */
+
 #creator {
     position: fixed;
+
     top: 7px;
     left: 50%;
+
     transform: translateX(-50%);
 
     color: white;
+
     font-size: 10px;
     letter-spacing: 2px;
 
-    z-index: 20;
-    pointer-events: none;
-
     text-shadow: 2px 2px #000;
+
+    z-index: 20;
+
+    pointer-events: none;
 }
 
-/* ================= HUD ================= */
+
+/* =====================================================
+   HUD
+===================================================== */
 
 #hud {
     position: fixed;
+
     top: 25px;
     left: 12px;
     right: 12px;
 
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
     z-index: 20;
+
     pointer-events: none;
 }
 
 .hud {
     color: white;
+
     font-size: 13px;
+
     text-shadow: 2px 2px #000;
 }
 
+
+/* =====================================================
+   HEARTS
+===================================================== */
+
 #lives {
     display: flex;
+
     gap: 5px;
+
     align-items: center;
 }
 
 .heart {
-    width: 12px;
-    height: 11px;
-    background: #ff3030;
+    width: 13px;
+    height: 12px;
 
     display: inline-block;
+
+    background: #ff3030;
 
     clip-path: polygon(
         0 25%,
@@ -129,99 +174,144 @@ input {
     background: #30313a;
 }
 
+
+/* =====================================================
+   PAUSE BUTTON
+===================================================== */
+
 #pauseButton {
-    width: 44px;
-    height: 34px;
+    width: 46px;
+    height: 36px;
 
     border: 2px solid white;
     border-radius: 4px;
 
     background: #111827;
+
     color: white;
 
     font-family: monospace;
+
     font-size: 16px;
     font-weight: bold;
 
     pointer-events: auto;
 }
 
-/* ================= CONTROLS ================= */
+
+/* =====================================================
+   CONTROLS
+===================================================== */
 
 #controls {
     position: fixed;
+
     left: 0;
     right: 0;
-    bottom: 14px;
+
+    bottom: 12px;
 
     z-index: 20;
 
     pointer-events: none;
 }
 
+
+/* BIGGER MOVEMENT BUTTONS */
+
 #movement {
     position: absolute;
-    left: 17px;
+
+    left: 18px;
     bottom: 0;
 
     display: flex;
+
     flex-direction: column;
-    gap: 7px;
+
+    gap: 9px;
 
     pointer-events: auto;
 }
 
 .control {
-    width: 55px;
-    height: 45px;
+    width: 76px;
+    height: 58px;
 
-    border: 2px solid white;
-    border-radius: 5px;
+    border: 3px solid white;
 
-    background: rgba(12, 20, 38, 0.9);
+    border-radius: 6px;
+
+    background: rgba(12, 20, 38, 0.94);
+
     color: white;
 
     font-family: monospace;
-    font-size: 22px;
+
+    font-size: 30px;
+
     font-weight: bold;
+
+    box-shadow:
+        3px 3px 0 #000;
 }
+
+.control:active {
+    transform: scale(0.93);
+
+    background: rgba(45, 65, 100, 0.95);
+}
+
+
+/* =====================================================
+   FIRE BUTTON
+===================================================== */
 
 #fireButton {
     position: absolute;
 
-    right: 17px;
+    right: 18px;
     bottom: 0;
 
-    width: 76px;
-    height: 54px;
+    width: 88px;
+    height: 62px;
 
-    border: 2px solid white;
-    border-radius: 5px;
+    border: 3px solid white;
+
+    border-radius: 6px;
 
     background: rgba(60, 20, 20, 0.95);
 
     pointer-events: auto;
+
+    box-shadow:
+        3px 3px 0 #000;
 }
 
-/* пиксельная пуля */
+#fireButton:active {
+    transform: scale(0.93);
+}
+
+
+/* PIXEL BULLET */
 
 #fireButton::before {
     content: "";
 
     position: absolute;
 
-    left: 18px;
-    top: 22px;
+    left: 22px;
+    top: 26px;
 
-    width: 35px;
+    width: 39px;
     height: 8px;
 
     background: white;
 
     box-shadow:
-        7px 0 #ffffff,
-        14px 0 #ffe45a,
-        21px 0 #ff9b32;
+        8px 0 #ffffff,
+        16px 0 #ffe45a,
+        24px 0 #ff9632;
 }
 
 #fireButton::after {
@@ -229,8 +319,8 @@ input {
 
     position: absolute;
 
-    left: 14px;
-    top: 19px;
+    left: 17px;
+    top: 23px;
 
     width: 5px;
     height: 14px;
@@ -238,15 +328,20 @@ input {
     background: white;
 }
 
-/* ================= OVERLAYS ================= */
+
+/* =====================================================
+   OVERLAYS
+===================================================== */
 
 .overlay {
     position: fixed;
+
     inset: 0;
 
     z-index: 50;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -258,18 +353,20 @@ input {
 }
 
 .panel {
-    width: min(88vw, 380px);
+    width: min(88vw, 390px);
 
     padding: 25px;
 
     border: 3px solid white;
 
     background: #090d18;
+
     color: white;
 
     text-align: center;
 
-    box-shadow: 0 0 0 4px #172033;
+    box-shadow:
+        0 0 0 4px #172033;
 }
 
 .panel h1 {
@@ -280,50 +377,65 @@ input {
 
 .panel p {
     font-size: 13px;
+
     line-height: 1.5;
 }
 
+
+/* =====================================================
+   MAIN BUTTON
+===================================================== */
+
 .mainButton {
     width: 100%;
+
     min-height: 46px;
 
     margin-top: 12px;
 
     border: 2px solid white;
+
     border-radius: 3px;
 
     background: #182338;
+
     color: white;
 
     font-family: monospace;
+
     font-size: 15px;
+
     font-weight: bold;
 
     touch-action: manipulation;
 }
 
-.mainButton:active,
-.control:active,
-#fireButton:active,
-#pauseButton:active {
-    transform: scale(0.94);
+.mainButton:active {
+    transform: scale(0.97);
 }
 
-/* ================= CHEAT ================= */
+
+/* =====================================================
+   CHEAT INPUT
+===================================================== */
 
 #cheatInput {
     width: 100%;
+
     height: 42px;
 
     margin-top: 15px;
+
     padding: 8px;
 
     border: 2px solid #777;
 
     background: #02030a;
+
     color: white;
 
     font-family: monospace;
+
     text-align: center;
 
     text-transform: uppercase;
@@ -331,15 +443,20 @@ input {
 
 #cheatMessage {
     min-height: 18px;
+
     margin-top: 8px;
 
     font-size: 11px;
 }
 
-/* ================= PORTRAIT ================= */
+
+/* =====================================================
+   PORTRAIT
+===================================================== */
 
 #portraitWarning {
     position: fixed;
+
     inset: 0;
 
     z-index: 100;
@@ -350,6 +467,7 @@ input {
     justify-content: center;
 
     background: #02030a;
+
     color: white;
 
     text-align: center;
@@ -357,6 +475,7 @@ input {
 
 .portraitBox {
     padding: 25px;
+
     border: 3px solid white;
 }
 
@@ -370,32 +489,60 @@ input {
 }
 
 @media (orientation: portrait) {
+
     #portraitWarning {
         display: flex;
     }
 }
+
 </style>
 </head>
 
+
 <body>
 
-<canvas id="gameCanvas" width="480" height="270"></canvas>
+
+<!-- =====================================================
+     GAME
+===================================================== -->
+
+<canvas
+    id="gameCanvas"
+    width="480"
+    height="270"
+></canvas>
+
 
 <div id="creator">
     CREATED BY GETOGENOV
 </div>
 
-<!-- HUD -->
+
+<!-- =====================================================
+     HUD
+===================================================== -->
 
 <div id="hud">
 
-    <div class="hud" id="lives"></div>
+    <div
+        class="hud"
+        id="lives"
+    ></div>
 
-    <div class="hud" id="score">
+
+    <div
+        class="hud"
+        id="score"
+    >
         SCORE: 0
     </div>
 
-    <div class="hud" id="power"></div>
+
+    <div
+        class="hud"
+        id="power"
+    ></div>
+
 
     <button id="pauseButton">
         II
@@ -403,41 +550,67 @@ input {
 
 </div>
 
-<!-- CONTROLS -->
+
+<!-- =====================================================
+     CONTROLS
+===================================================== -->
 
 <div id="controls">
 
     <div id="movement">
 
-        <button class="control" id="upButton">
+        <button
+            class="control"
+            id="upButton"
+        >
             ▲
         </button>
 
-        <button class="control" id="downButton">
+
+        <button
+            class="control"
+            id="downButton"
+        >
             ▼
         </button>
 
     </div>
 
-    <button id="fireButton"></button>
+
+    <button
+        id="fireButton"
+    ></button>
 
 </div>
 
-<!-- START -->
 
-<div class="overlay" id="startScreen">
+<!-- =====================================================
+     START SCREEN
+===================================================== -->
+
+<div
+    class="overlay"
+    id="startScreen"
+>
 
     <div class="panel">
 
-        <h1>COSMOPILOT</h1>
+        <h1>
+            COSMOPILOT
+        </h1>
 
         <p>
             SPACE PILOT<br><br>
+
             Destroy asteroids.<br>
             Collect coins and power-ups.
         </p>
 
-        <button class="mainButton" id="startButton">
+
+        <button
+            class="mainButton"
+            id="startButton"
+        >
             START GAME
         </button>
 
@@ -445,17 +618,30 @@ input {
 
 </div>
 
-<!-- PAUSE -->
 
-<div class="overlay hidden" id="pauseScreen">
+<!-- =====================================================
+     PAUSE SCREEN
+===================================================== -->
+
+<div
+    class="overlay hidden"
+    id="pauseScreen"
+>
 
     <div class="panel">
 
-        <h1>PAUSED</h1>
+        <h1>
+            PAUSED
+        </h1>
 
-        <button class="mainButton" id="resumeButton">
+
+        <button
+            class="mainButton"
+            id="resumeButton"
+        >
             RESUME
         </button>
+
 
         <input
             id="cheatInput"
@@ -468,6 +654,7 @@ input {
             spellcheck="false"
         >
 
+
         <button
             class="mainButton"
             id="cheatButton"
@@ -475,25 +662,39 @@ input {
             ACTIVATE CHEAT
         </button>
 
+
         <div id="cheatMessage"></div>
 
     </div>
 
 </div>
 
-<!-- GAME OVER -->
 
-<div class="overlay hidden" id="gameOverScreen">
+<!-- =====================================================
+     GAME OVER
+===================================================== -->
+
+<div
+    class="overlay hidden"
+    id="gameOverScreen"
+>
 
     <div class="panel">
 
-        <h1>GAME OVER</h1>
+        <h1>
+            GAME OVER
+        </h1>
+
 
         <p id="finalScore">
             SCORE: 0
         </p>
 
-        <button class="mainButton" id="restartButton">
+
+        <button
+            class="mainButton"
+            id="restartButton"
+        >
             PLAY AGAIN
         </button>
 
@@ -501,7 +702,10 @@ input {
 
 </div>
 
-<!-- PORTRAIT -->
+
+<!-- =====================================================
+     PORTRAIT
+===================================================== -->
 
 <div id="portraitWarning">
 
@@ -516,14 +720,18 @@ input {
 
 </div>
 
+
 <script>
 
 /* =====================================================
    CANVAS
 ===================================================== */
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("gameCanvas");
+
+const ctx =
+    canvas.getContext("2d");
 
 const W = canvas.width;
 const H = canvas.height;
@@ -588,19 +796,23 @@ const cheatMessage =
 
 
 /* =====================================================
-   GAME VARIABLES
+   GAME STATE
 ===================================================== */
 
 let running = false;
+
 let paused = false;
 
 let score = 0;
+
 let lives = 3;
 
 let lastTime = 0;
 
 let asteroidTimer = 0;
+
 let coinTimer = 0;
+
 let powerupTimer = 0;
 
 let fireTimer = 0;
@@ -608,11 +820,12 @@ let fireTimer = 0;
 let invulnerabilityTimer = 0;
 
 let shieldTimer = 0;
+
 let speedTimer = 0;
 
-let autoAim = false;
-
 let speedAnimation = 0;
+
+let autoAim = false;
 
 
 /* =====================================================
@@ -620,8 +833,11 @@ let speedAnimation = 0;
 ===================================================== */
 
 const input = {
+
     up: false,
+
     down: false,
+
     fire: false
 };
 
@@ -631,25 +847,33 @@ const input = {
 ===================================================== */
 
 const ship = {
+
     x: 65,
+
     y: H / 2,
 
     speed: 150,
 
     width: 25,
+
     height: 18
 };
 
 
 /* =====================================================
-   GAME ARRAYS
+   OBJECTS
 ===================================================== */
 
 let asteroids = [];
+
 let bullets = [];
+
 let coins = [];
+
 let powerups = [];
+
 let particles = [];
+
 let stars = [];
 
 
@@ -658,7 +882,10 @@ let stars = [];
 ===================================================== */
 
 function rand(min, max) {
-    return Math.random() * (max - min) + min;
+
+    return Math.random() *
+        (max - min) +
+        min;
 }
 
 
@@ -669,20 +896,29 @@ function rand(min, max) {
 function resetGame() {
 
     score = 0;
+
     lives = 3;
 
     ship.x = 65;
+
     ship.y = H / 2;
 
     asteroids = [];
+
     bullets = [];
+
     coins = [];
+
     powerups = [];
+
     particles = [];
+
     stars = [];
 
     asteroidTimer = 0.5;
+
     coinTimer = 2;
+
     powerupTimer = 5;
 
     fireTimer = 0;
@@ -690,11 +926,16 @@ function resetGame() {
     invulnerabilityTimer = 0;
 
     shieldTimer = 0;
+
     speedTimer = 0;
+
+    speedAnimation = 0;
 
     autoAim = false;
 
-    speedAnimation = 0;
+    cheatInput.value = "";
+
+    cheatMessage.textContent = "";
 
     createStars();
 
@@ -718,36 +959,49 @@ function updateHUD() {
         heart.className = "heart";
 
         if (i >= lives) {
-            heart.classList.add("empty");
+
+            heart.classList.add(
+                "empty"
+            );
         }
 
-        livesElement.appendChild(heart);
+        livesElement.appendChild(
+            heart
+        );
     }
+
 
     scoreElement.textContent =
         "SCORE: " + score;
 
-    let text = "";
+
+    let powerText = "";
+
 
     if (shieldTimer > 0) {
 
-        text +=
+        powerText +=
             "SHIELD " +
             shieldTimer.toFixed(1);
     }
 
+
     if (speedTimer > 0) {
 
-        if (text !== "") {
-            text += " | ";
+        if (powerText !== "") {
+
+            powerText +=
+                " | ";
         }
 
-        text +=
+        powerText +=
             "SPEED " +
             speedTimer.toFixed(1);
     }
 
-    powerElement.textContent = text;
+
+    powerElement.textContent =
+        powerText;
 }
 
 
@@ -760,41 +1014,60 @@ function createStars() {
     for (let i = 0; i < 90; i++) {
 
         stars.push({
+
             x: rand(0, W),
+
             y: rand(0, H),
-            size: Math.random() < 0.8 ? 1 : 2,
+
+            size:
+                Math.random() < 0.8
+                    ? 1
+                    : 2,
+
             speed: rand(8, 30),
+
             alpha: rand(0.3, 1)
         });
     }
 }
 
+
 function updateStars(dt) {
 
     for (const star of stars) {
 
-        star.x -= star.speed * dt;
+        star.x -=
+            star.speed * dt;
 
         if (star.x < 0) {
 
             star.x = W;
-            star.y = rand(0, H);
+
+            star.y =
+                rand(0, H);
         }
     }
 }
+
 
 function drawStars() {
 
     for (const star of stars) {
 
-        ctx.globalAlpha = star.alpha;
+        ctx.globalAlpha =
+            star.alpha;
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle =
+            "#ffffff";
 
         ctx.fillRect(
+
             Math.floor(star.x),
+
             Math.floor(star.y),
+
             star.size,
+
             star.size
         );
     }
@@ -809,23 +1082,36 @@ function drawStars() {
 
 function drawShip() {
 
-    const x = Math.floor(ship.x);
-    const y = Math.floor(ship.y);
+    const x =
+        Math.floor(ship.x);
+
+    const y =
+        Math.floor(ship.y);
+
 
     ctx.save();
 
-    if (invulnerabilityTimer > 0) {
+
+    if (
+        invulnerabilityTimer > 0
+    ) {
 
         if (
-            Math.floor(invulnerabilityTimer * 12) % 2 === 0
+            Math.floor(
+                invulnerabilityTimer * 12
+            ) % 2 === 0
         ) {
-            ctx.globalAlpha = 0.35;
+
+            ctx.globalAlpha =
+                0.35;
         }
     }
 
-    /* engine */
 
-    ctx.fillStyle = "#ff9d32";
+    /* ENGINE */
+
+    ctx.fillStyle =
+        "#ff9d32";
 
     ctx.fillRect(
         x - 17,
@@ -834,7 +1120,9 @@ function drawShip() {
         6
     );
 
-    ctx.fillStyle = "#fff04c";
+
+    ctx.fillStyle =
+        "#fff04c";
 
     ctx.fillRect(
         x - 23,
@@ -843,9 +1131,11 @@ function drawShip() {
         4
     );
 
-    /* wings */
 
-    ctx.fillStyle = "#68789e";
+    /* WINGS */
+
+    ctx.fillStyle =
+        "#68789e";
 
     ctx.fillRect(
         x - 7,
@@ -861,9 +1151,11 @@ function drawShip() {
         5
     );
 
-    /* body */
 
-    ctx.fillStyle = "#dce5ff";
+    /* BODY */
+
+    ctx.fillStyle =
+        "#dce5ff";
 
     ctx.fillRect(
         x - 2,
@@ -879,9 +1171,11 @@ function drawShip() {
         8
     );
 
-    /* nose */
 
-    ctx.fillStyle = "#ffffff";
+    /* NOSE */
+
+    ctx.fillStyle =
+        "#ffffff";
 
     ctx.fillRect(
         x + 19,
@@ -890,9 +1184,11 @@ function drawShip() {
         2
     );
 
-    /* cockpit */
 
-    ctx.fillStyle = "#29d9ff";
+    /* COCKPIT */
+
+    ctx.fillStyle =
+        "#29d9ff";
 
     ctx.fillRect(
         x + 2,
@@ -901,7 +1197,9 @@ function drawShip() {
         8
     );
 
-    ctx.fillStyle = "#b9f8ff";
+
+    ctx.fillStyle =
+        "#b9f8ff";
 
     ctx.fillRect(
         x + 4,
@@ -910,11 +1208,15 @@ function drawShip() {
         2
     );
 
+
     ctx.restore();
+
 
     drawShield();
 
+
     if (speedTimer > 0) {
+
         drawSpeedTrail();
     }
 }
@@ -930,29 +1232,48 @@ function drawShield() {
         return;
     }
 
+
     const pulse =
-        Math.sin(performance.now() * 0.008) * 2;
+        Math.sin(
+            performance.now() * 0.008
+        ) * 2;
+
 
     ctx.save();
 
-    ctx.strokeStyle = "#4bdcff";
+
+    ctx.strokeStyle =
+        "#4bdcff";
+
     ctx.lineWidth = 2;
+
 
     ctx.globalAlpha =
         0.65 +
-        Math.sin(performance.now() * 0.01) * 0.15;
+        Math.sin(
+            performance.now() * 0.01
+        ) * 0.15;
+
 
     ctx.beginPath();
 
+
     ctx.arc(
+
         ship.x + 2,
+
         ship.y,
+
         23 + pulse,
+
         0,
+
         Math.PI * 2
     );
 
+
     ctx.stroke();
+
 
     ctx.restore();
 }
@@ -966,43 +1287,66 @@ function drawSpeedTrail() {
 
     ctx.save();
 
+
     for (let i = 0; i < 14; i++) {
 
         const offset =
-            (speedAnimation * 120 + i * 22) % 120;
+            (
+                speedAnimation * 120 +
+                i * 22
+            ) % 120;
+
 
         const x =
-            ship.x - 18 - offset;
+            ship.x -
+            18 -
+            offset;
+
 
         const y =
             ship.y +
             ((i % 5) - 2) * 4;
 
+
         const length =
-            8 + (i % 4) * 4;
+            8 +
+            (i % 4) * 4;
+
 
         const green =
             Math.floor(
                 180 +
-                Math.sin(speedAnimation * 7 + i) * 60
+                Math.sin(
+                    speedAnimation * 7 +
+                    i
+                ) * 60
             );
+
 
         ctx.fillStyle =
             "rgb(255," +
             green +
             ",40)";
 
+
         ctx.globalAlpha =
             0.15 +
-            (1 - offset / 120) * 0.65;
+            (1 - offset / 120) *
+            0.65;
+
 
         ctx.fillRect(
+
             Math.floor(x),
+
             Math.floor(y),
+
             length,
+
             2
         );
     }
+
 
     ctx.restore();
 }
@@ -1017,40 +1361,73 @@ function spawnAsteroid() {
     const radius =
         rand(10, 22);
 
-    const count = 8;
-
     const vertices = [];
 
-    for (let i = 0; i < count; i++) {
+    const points = 8;
+
+
+    for (
+        let i = 0;
+        i < points;
+        i++
+    ) {
 
         const angle =
-            (Math.PI * 2 / count) * i;
+            (
+                Math.PI * 2 /
+                points
+            ) * i;
+
 
         const r =
-            radius * rand(0.72, 1.18);
+            radius *
+            rand(
+                0.72,
+                1.18
+            );
+
 
         vertices.push({
-            x: Math.cos(angle) * r,
-            y: Math.sin(angle) * r
+
+            x:
+                Math.cos(angle) * r,
+
+            y:
+                Math.sin(angle) * r
         });
     }
 
+
     asteroids.push({
 
-        x: W + radius,
+        x:
+            W + radius,
 
-        y: rand(
-            25,
-            H - 25
-        ),
+        y:
+            rand(
+                25,
+                H - 25
+            ),
 
         radius,
 
-        speed: rand(55, 105),
+        speed:
+            rand(
+                55,
+                105
+            ),
 
-        rotation: rand(0, Math.PI * 2),
+        rotation:
+            rand(
+                0,
+                Math.PI * 2
+            ),
 
-        rotationSpeed: rand(-1, 1),
+        rotationSpeed:
+            rand(
+                -1,
+                1
+            ),
 
         vertices
     });
@@ -1061,40 +1438,70 @@ function drawAsteroid(a) {
 
     ctx.save();
 
+
     ctx.translate(
+
         Math.floor(a.x),
+
         Math.floor(a.y)
     );
 
-    ctx.rotate(a.rotation);
 
-    ctx.fillStyle = "#686e7a";
+    ctx.rotate(
+        a.rotation
+    );
+
+
+    ctx.fillStyle =
+        "#686e7a";
+
 
     ctx.beginPath();
 
-    for (let i = 0; i < a.vertices.length; i++) {
+
+    for (
+        let i = 0;
+        i < a.vertices.length;
+        i++
+    ) {
 
         const v =
             a.vertices[i];
 
+
         if (i === 0) {
-            ctx.moveTo(v.x, v.y);
+
+            ctx.moveTo(
+                v.x,
+                v.y
+            );
+
         } else {
-            ctx.lineTo(v.x, v.y);
+
+            ctx.lineTo(
+                v.x,
+                v.y
+            );
         }
     }
+
 
     ctx.closePath();
 
     ctx.fill();
 
-    ctx.strokeStyle = "#9ba2ad";
+
+    ctx.strokeStyle =
+        "#9ba2ad";
 
     ctx.stroke();
 
-    /* craters */
 
-    ctx.fillStyle = "#454a54";
+    /* CRATERS */
+
+    ctx.fillStyle =
+        "#454a54";
+
 
     ctx.fillRect(
         -a.radius * 0.45,
@@ -1103,6 +1510,7 @@ function drawAsteroid(a) {
         4
     );
 
+
     ctx.fillRect(
         a.radius * 0.15,
         -a.radius * 0.55,
@@ -1110,12 +1518,14 @@ function drawAsteroid(a) {
         4
     );
 
+
     ctx.fillRect(
         a.radius * 0.2,
         a.radius * 0.2,
         5,
         4
     );
+
 
     ctx.restore();
 }
@@ -1129,21 +1539,32 @@ function spawnCoin() {
 
     coins.push({
 
-        x: W + 10,
+        x:
+            W + 10,
 
-        y: rand(
-            25,
-            H - 25
-        ),
+        y:
+            rand(
+                25,
+                H - 25
+            ),
 
-        speed: rand(70, 100),
+        speed:
+            rand(
+                70,
+                100
+            ),
 
-        rotation: rand(
-            0,
-            Math.PI * 2
-        ),
+        rotation:
+            rand(
+                0,
+                Math.PI * 2
+            ),
 
-        rotationSpeed: rand(5, 8),
+        rotationSpeed:
+            rand(
+                5,
+                8
+            ),
 
         radius: 6
     });
@@ -1154,39 +1575,60 @@ function drawCoin(c) {
 
     ctx.save();
 
+
     ctx.translate(
+
         Math.floor(c.x),
+
         Math.floor(c.y)
     );
+
 
     const width =
         Math.max(
             2,
             Math.abs(
-                Math.cos(c.rotation)
+                Math.cos(
+                    c.rotation
+                )
             ) * 7
         );
 
-    ctx.fillStyle = "#ffe344";
+
+    ctx.fillStyle =
+        "#ffe344";
+
 
     ctx.fillRect(
+
         -width / 2,
+
         -6,
+
         width,
+
         12
     );
 
-    ctx.fillStyle = "#fff7a6";
+
+    ctx.fillStyle =
+        "#fff7a6";
+
 
     ctx.fillRect(
+
         -width / 2,
+
         -4,
+
         Math.max(
             1,
             width / 2
         ),
+
         2
     );
+
 
     ctx.restore();
 }
@@ -1203,14 +1645,17 @@ function spawnPowerup() {
             ? "shield"
             : "speed";
 
+
     powerups.push({
 
-        x: W + 15,
+        x:
+            W + 15,
 
-        y: rand(
-            30,
-            H - 30
-        ),
+        y:
+            rand(
+                30,
+                H - 30
+            ),
 
         speed: 75,
 
@@ -1223,16 +1668,23 @@ function drawPowerup(p) {
 
     ctx.save();
 
+
     ctx.translate(
+
         Math.floor(p.x),
+
         Math.floor(p.y)
     );
 
-    if (p.type === "shield") {
 
-        /* pixel shield */
+    if (
+        p.type ===
+        "shield"
+    ) {
 
-        ctx.fillStyle = "#45d8ff";
+        ctx.fillStyle =
+            "#45d8ff";
+
 
         ctx.fillRect(
             -3,
@@ -1241,6 +1693,7 @@ function drawPowerup(p) {
             18
         );
 
+
         ctx.fillRect(
             -7,
             -5,
@@ -1248,7 +1701,10 @@ function drawPowerup(p) {
             10
         );
 
-        ctx.fillStyle = "#aaf4ff";
+
+        ctx.fillStyle =
+            "#aaf4ff";
+
 
         ctx.fillRect(
             -2,
@@ -1257,11 +1713,12 @@ function drawPowerup(p) {
             10
         );
 
+
     } else {
 
-        /* speed arrows */
+        ctx.fillStyle =
+            "#ffe600";
 
-        ctx.fillStyle = "#ffe600";
 
         ctx.fillRect(
             -10,
@@ -1270,12 +1727,14 @@ function drawPowerup(p) {
             3
         );
 
+
         ctx.fillRect(
             -5,
             -3,
             8,
             3
         );
+
 
         ctx.fillRect(
             -1,
@@ -1284,6 +1743,7 @@ function drawPowerup(p) {
             3
         );
 
+
         ctx.fillRect(
             2,
             -6,
@@ -1291,12 +1751,14 @@ function drawPowerup(p) {
             3
         );
 
+
         ctx.fillRect(
             7,
             -3,
             8,
             3
         );
+
 
         ctx.fillRect(
             11,
@@ -1306,71 +1768,181 @@ function drawPowerup(p) {
         );
     }
 
+
     ctx.restore();
 }
 
 
 /* =====================================================
-   BULLETS
+   AUTO AIM
 ===================================================== */
 
-function nearestAsteroid() {
+function getAimTarget() {
 
     let target = null;
-    let best = Infinity;
 
-    for (const asteroid of asteroids) {
+    let bestDistance =
+        Infinity;
+
+
+    for (
+        const asteroid of asteroids
+    ) {
 
         if (
             asteroid.x <
-            ship.x - 10
+            ship.x
         ) {
             continue;
         }
 
+
         const dx =
-            asteroid.x - ship.x;
+            asteroid.x -
+            ship.x;
+
 
         const dy =
-            asteroid.y - ship.y;
+            asteroid.y -
+            ship.y;
+
 
         const distance =
-            dx * dx + dy * dy;
+            dx * dx +
+            dy * dy;
 
-        if (distance < best) {
 
-            best = distance;
-            target = asteroid;
+        if (
+            distance <
+            bestDistance
+        ) {
+
+            bestDistance =
+                distance;
+
+            target =
+                asteroid;
         }
     }
+
 
     return target;
 }
 
 
+/*
+    Эта функция рассчитывает,
+    где астероид окажется к моменту
+    встречи с пулей.
+*/
+
+function calculateAimPoint(
+    target,
+    bulletSpeed
+) {
+
+    if (!target) {
+        return null;
+    }
+
+
+    const dx =
+        target.x -
+        ship.x;
+
+
+    const dy =
+        target.y -
+        ship.y;
+
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+
+    if (distance <= 0) {
+        return null;
+    }
+
+
+    const flightTime =
+        distance /
+        bulletSpeed;
+
+
+    const futureX =
+        target.x -
+        target.speed *
+        flightTime;
+
+
+    const futureY =
+        target.y;
+
+
+    return {
+
+        x: futureX,
+
+        y: futureY
+    };
+}
+
+
+/* =====================================================
+   SHOOT
+===================================================== */
+
 function shoot() {
 
-    if (fireTimer > 0) {
+    if (
+        fireTimer > 0
+    ) {
         return;
     }
 
+
     fireTimer = 0.28;
 
-    let vx = 330;
+
+    const bulletSpeed =
+        340;
+
+
+    let vx =
+        bulletSpeed;
+
+
     let vy = 0;
+
 
     if (autoAim) {
 
         const target =
-            nearestAsteroid();
+            getAimTarget();
 
-        if (target) {
+
+        const aimPoint =
+            calculateAimPoint(
+                target,
+                bulletSpeed
+            );
+
+
+        if (aimPoint) {
 
             const dx =
-                target.x - ship.x;
+                aimPoint.x -
+                ship.x;
+
 
             const dy =
-                target.y - ship.y;
+                aimPoint.y -
+                ship.y;
+
 
             const distance =
                 Math.sqrt(
@@ -1378,47 +1950,194 @@ function shoot() {
                     dy * dy
                 ) || 1;
 
+
             vx =
-                dx / distance * 330;
+                dx /
+                distance *
+                bulletSpeed;
+
 
             vy =
-                dy / distance * 330;
+                dy /
+                distance *
+                bulletSpeed;
         }
     }
 
+
     bullets.push({
 
-        x: ship.x + 24,
+        x:
+            ship.x + 24,
 
-        y: ship.y,
+        y:
+            ship.y,
 
         vx,
+
         vy,
 
-        life: 2
+        life: 2,
+
+        autoAim
     });
 }
 
 
+/* =====================================================
+   DRAW BULLET
+===================================================== */
+
 function drawBullet(b) {
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle =
+        "#ffffff";
+
 
     ctx.fillRect(
+
         Math.floor(b.x),
+
         Math.floor(b.y),
-        6,
+
+        7,
+
         2
     );
 
-    ctx.fillStyle = "#ffe35a";
+
+    ctx.fillStyle =
+        "#ffe35a";
+
 
     ctx.fillRect(
-        Math.floor(b.x + 3),
+
+        Math.floor(
+            b.x + 3
+        ),
+
         Math.floor(b.y),
+
         4,
+
         2
     );
+}
+
+
+/* =====================================================
+   BULLET AUTO-AIM CORRECTION
+===================================================== */
+
+function correctBulletAim(
+    bullet,
+    dt
+) {
+
+    if (
+        !bullet.autoAim
+    ) {
+        return;
+    }
+
+
+    const target =
+        getAimTarget();
+
+
+    if (!target) {
+        return;
+    }
+
+
+    const dx =
+        target.x -
+        bullet.x;
+
+
+    const dy =
+        target.y -
+        bullet.y;
+
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+
+    if (
+        distance <= 0
+    ) {
+        return;
+    }
+
+
+    const desiredVX =
+        dx /
+        distance *
+        340;
+
+
+    const desiredVY =
+        dy /
+        distance *
+        340;
+
+
+    /*
+        Сильная коррекция,
+        но не мгновенный разворот.
+    */
+
+    const correction =
+        Math.min(
+            1,
+            dt * 8
+        );
+
+
+    bullet.vx +=
+        (
+            desiredVX -
+            bullet.vx
+        ) *
+        correction;
+
+
+    bullet.vy +=
+        (
+            desiredVY -
+            bullet.vy
+        ) *
+        correction;
+
+
+    const speed =
+        Math.sqrt(
+            bullet.vx *
+            bullet.vx +
+            bullet.vy *
+            bullet.vy
+        );
+
+
+    if (
+        speed > 0
+    ) {
+
+        bullet.vx =
+            bullet.vx /
+            speed *
+            340;
+
+
+        bullet.vy =
+            bullet.vy /
+            speed *
+            340;
+    }
 }
 
 
@@ -1426,24 +2145,41 @@ function drawBullet(b) {
    PARTICLES
 ===================================================== */
 
-function particlesCreate(
+function createParticles(
     x,
     y,
     amount,
     type
 ) {
 
-    for (let i = 0; i < amount; i++) {
+    for (
+        let i = 0;
+        i < amount;
+        i++
+    ) {
 
         particles.push({
 
             x,
             y,
 
-            vx: rand(-100, 100),
-            vy: rand(-100, 100),
+            vx:
+                rand(
+                    -100,
+                    100
+                ),
 
-            life: rand(0.25, 0.65),
+            vy:
+                rand(
+                    -100,
+                    100
+                ),
+
+            life:
+                rand(
+                    0.25,
+                    0.65
+                ),
 
             size:
                 Math.random() < 0.7
@@ -1458,16 +2194,29 @@ function particlesCreate(
 
 function drawParticle(p) {
 
-    if (p.type === "shield") {
-        ctx.fillStyle = "#62e7ff";
+    if (
+        p.type ===
+        "shield"
+    ) {
+
+        ctx.fillStyle =
+            "#62e7ff";
+
     } else {
-        ctx.fillStyle = "#ffd34d";
+
+        ctx.fillStyle =
+            "#ffd34d";
     }
 
+
     ctx.fillRect(
+
         Math.floor(p.x),
+
         Math.floor(p.y),
+
         p.size,
+
         p.size
     );
 }
@@ -1489,8 +2238,10 @@ function collision(
     const dx =
         x1 - x2;
 
+
     const dy =
         y1 - y2;
+
 
     return (
         dx * dx +
@@ -1502,7 +2253,7 @@ function collision(
 
 
 /* =====================================================
-   SHIP / ASTEROID COLLISION
+   ASTEROID HIT
 ===================================================== */
 
 function asteroidHit(index) {
@@ -1510,66 +2261,90 @@ function asteroidHit(index) {
     const asteroid =
         asteroids[index];
 
+
     if (!asteroid) {
         return;
     }
 
+
     /*
-        ЩИТ:
+        SHIELD ACTIVE:
 
-        - столкновение не снимает щит;
-        - таймер не меняется;
-        - жизнь не теряется;
-        - астероид уничтожается.
-
-        Щит продолжает работать до окончания
-        своих исходных 5 секунд.
+        asteroid destroyed,
+        life stays,
+        shield stays,
+        shield timer stays unchanged.
     */
 
-    if (shieldTimer > 0) {
+    if (
+        shieldTimer > 0
+    ) {
 
-        particlesCreate(
+        createParticles(
+
             asteroid.x,
+
             asteroid.y,
+
             18,
+
             "shield"
         );
+
 
         asteroids.splice(
             index,
             1
         );
 
-        invulnerabilityTimer = 0.12;
+
+        invulnerabilityTimer =
+            0.12;
+
 
         return;
     }
 
-    /* обычное столкновение */
 
-    particlesCreate(
+    createParticles(
+
         asteroid.x,
+
         asteroid.y,
+
         14,
+
         "normal"
     );
+
 
     asteroids.splice(
         index,
         1
     );
 
-    if (invulnerabilityTimer > 0) {
+
+    if (
+        invulnerabilityTimer > 0
+    ) {
         return;
     }
 
+
     lives--;
 
-    invulnerabilityTimer = 1.2;
+
+    invulnerabilityTimer =
+        1.2;
+
 
     updateHUD();
 
-    if (lives <= 0) {
+
+    if (
+        lives <= 0
+    ) {
+
         gameOver();
     }
 }
@@ -1583,18 +2358,22 @@ function updateShip(dt) {
 
     let direction = 0;
 
+
     if (input.up) {
         direction--;
     }
+
 
     if (input.down) {
         direction++;
     }
 
+
     const multiplier =
         speedTimer > 0
             ? 1.75
             : 1;
+
 
     ship.y +=
         direction *
@@ -1602,13 +2381,24 @@ function updateShip(dt) {
         multiplier *
         dt;
 
-    if (ship.y < 15) {
+
+    if (
+        ship.y < 15
+    ) {
+
         ship.y = 15;
     }
 
-    if (ship.y > H - 15) {
-        ship.y = H - 15;
+
+    if (
+        ship.y >
+        H - 15
+    ) {
+
+        ship.y =
+            H - 15;
     }
+
 
     speedAnimation += dt;
 }
@@ -1621,80 +2411,127 @@ function updateShip(dt) {
 function updateBullets(dt) {
 
     for (
-        let i = bullets.length - 1;
+        let i =
+            bullets.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const bullet =
             bullets[i];
 
+
+        /*
+            Сначала корректируем
+            auto-aim.
+        */
+
+        correctBulletAim(
+            bullet,
+            dt
+        );
+
+
         bullet.x +=
             bullet.vx * dt;
+
 
         bullet.y +=
             bullet.vy * dt;
 
+
         bullet.life -= dt;
 
-        let hit = false;
+
+        let hit =
+            false;
+
 
         for (
-            let j = asteroids.length - 1;
+            let j =
+                asteroids.length - 1;
+
             j >= 0;
+
             j--
         ) {
 
             const asteroid =
                 asteroids[j];
 
+
             if (
                 collision(
+
                     bullet.x,
+
                     bullet.y,
-                    3,
+
+                    4,
+
                     asteroid.x,
+
                     asteroid.y,
+
                     asteroid.radius
                 )
             ) {
 
-                particlesCreate(
+                createParticles(
+
                     asteroid.x,
+
                     asteroid.y,
+
                     12,
+
                     "normal"
                 );
+
 
                 asteroids.splice(
                     j,
                     1
                 );
 
+
                 bullets.splice(
                     i,
                     1
                 );
 
+
                 score += 10;
+
 
                 updateHUD();
 
+
                 hit = true;
+
 
                 break;
             }
         }
 
+
         if (hit) {
             continue;
         }
 
+
         if (
             bullet.life <= 0 ||
-            bullet.x > W + 30 ||
-            bullet.y < -30 ||
-            bullet.y > H + 30
+
+            bullet.x > W + 40 ||
+
+            bullet.x < -40 ||
+
+            bullet.y < -40 ||
+
+            bullet.y > H + 40
         ) {
 
             bullets.splice(
@@ -1713,27 +2550,41 @@ function updateBullets(dt) {
 function updateAsteroids(dt) {
 
     for (
-        let i = asteroids.length - 1;
+        let i =
+            asteroids.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const asteroid =
             asteroids[i];
 
+
         asteroid.x -=
-            asteroid.speed * dt;
+            asteroid.speed *
+            dt;
+
 
         asteroid.rotation +=
-            asteroid.rotationSpeed * dt;
+            asteroid.rotationSpeed *
+            dt;
+
 
         if (
             collision(
+
                 ship.x,
+
                 ship.y,
+
                 11,
+
                 asteroid.x,
+
                 asteroid.y,
+
                 asteroid.radius
             )
         ) {
@@ -1743,7 +2594,11 @@ function updateAsteroids(dt) {
             continue;
         }
 
-        if (asteroid.x < -50) {
+
+        if (
+            asteroid.x <
+            -50
+        ) {
 
             asteroids.splice(
                 i,
@@ -1761,51 +2616,77 @@ function updateAsteroids(dt) {
 function updateCoins(dt) {
 
     for (
-        let i = coins.length - 1;
+        let i =
+            coins.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const coin =
             coins[i];
 
+
         coin.x -=
-            coin.speed * dt;
+            coin.speed *
+            dt;
+
 
         coin.rotation +=
-            coin.rotationSpeed * dt;
+            coin.rotationSpeed *
+            dt;
+
 
         if (
             collision(
+
                 ship.x,
+
                 ship.y,
+
                 12,
+
                 coin.x,
+
                 coin.y,
+
                 coin.radius
             )
         ) {
 
             score += 25;
 
-            particlesCreate(
+
+            createParticles(
+
                 coin.x,
+
                 coin.y,
+
                 8,
+
                 "normal"
             );
+
 
             coins.splice(
                 i,
                 1
             );
 
+
             updateHUD();
+
 
             continue;
         }
 
-        if (coin.x < -20) {
+
+        if (
+            coin.x <
+            -20
+        ) {
 
             coins.splice(
                 i,
@@ -1823,24 +2704,36 @@ function updateCoins(dt) {
 function updatePowerups(dt) {
 
     for (
-        let i = powerups.length - 1;
+        let i =
+            powerups.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const power =
             powerups[i];
 
+
         power.x -=
-            power.speed * dt;
+            power.speed *
+            dt;
+
 
         if (
             collision(
+
                 ship.x,
+
                 ship.y,
+
                 13,
+
                 power.x,
+
                 power.y,
+
                 11
             )
         ) {
@@ -1850,16 +2743,17 @@ function updatePowerups(dt) {
                 "shield"
             ) {
 
-                /*
-                    Всегда полные 5 секунд.
-                */
-
                 shieldTimer = 5;
 
-                particlesCreate(
+
+                createParticles(
+
                     power.x,
+
                     power.y,
+
                     18,
+
                     "shield"
                 );
 
@@ -1867,25 +2761,37 @@ function updatePowerups(dt) {
 
                 speedTimer = 5;
 
-                particlesCreate(
+
+                createParticles(
+
                     power.x,
+
                     power.y,
+
                     18,
+
                     "normal"
                 );
             }
+
 
             powerups.splice(
                 i,
                 1
             );
 
+
             updateHUD();
+
 
             continue;
         }
 
-        if (power.x < -30) {
+
+        if (
+            power.x <
+            -30
+        ) {
 
             powerups.splice(
                 i,
@@ -1903,26 +2809,41 @@ function updatePowerups(dt) {
 function updateParticles(dt) {
 
     for (
-        let i = particles.length - 1;
+        let i =
+            particles.length - 1;
+
         i >= 0;
+
         i--
     ) {
 
         const particle =
             particles[i];
 
+
         particle.x +=
             particle.vx * dt;
+
 
         particle.y +=
             particle.vy * dt;
 
-        particle.vx *= 0.97;
-        particle.vy *= 0.97;
 
-        particle.life -= dt;
+        particle.vx *=
+            0.97;
 
-        if (particle.life <= 0) {
+
+        particle.vy *=
+            0.97;
+
+
+        particle.life -=
+            dt;
+
+
+        if (
+            particle.life <= 0
+        ) {
 
             particles.splice(
                 i,
@@ -1939,81 +2860,134 @@ function updateParticles(dt) {
 
 function updateTimers(dt) {
 
-    if (fireTimer > 0) {
+    if (
+        fireTimer > 0
+    ) {
+
         fireTimer -= dt;
     }
 
-    if (invulnerabilityTimer > 0) {
-        invulnerabilityTimer -= dt;
+
+    if (
+        invulnerabilityTimer > 0
+    ) {
+
+        invulnerabilityTimer -=
+            dt;
     }
 
-    if (shieldTimer > 0) {
+
+    /*
+        SHIELD TIMER IS COMPLETELY
+        INDEPENDENT FROM COLLISIONS.
+    */
+
+    if (
+        shieldTimer > 0
+    ) {
 
         shieldTimer -= dt;
 
-        if (shieldTimer < 0) {
+
+        if (
+            shieldTimer < 0
+        ) {
+
             shieldTimer = 0;
         }
     }
 
-    if (speedTimer > 0) {
+
+    if (
+        speedTimer > 0
+    ) {
 
         speedTimer -= dt;
 
-        if (speedTimer < 0) {
+
+        if (
+            speedTimer < 0
+        ) {
+
             speedTimer = 0;
         }
     }
+
 
     updateHUD();
 }
 
 
 /* =====================================================
-   SPAWN
+   SPAWNING
 ===================================================== */
 
 function updateSpawning(dt) {
 
     asteroidTimer -= dt;
 
-    if (asteroidTimer <= 0) {
+
+    if (
+        asteroidTimer <= 0
+    ) {
 
         spawnAsteroid();
 
+
         asteroidTimer =
-            rand(0.55, 1.1);
+            rand(
+                0.55,
+                1.1
+            );
     }
+
 
     coinTimer -= dt;
 
-    if (coinTimer <= 0) {
+
+    if (
+        coinTimer <= 0
+    ) {
 
         spawnCoin();
 
+
         coinTimer =
-            rand(2, 4);
+            rand(
+                2,
+                4
+            );
     }
+
 
     powerupTimer -= dt;
 
-    if (powerupTimer <= 0) {
+
+    if (
+        powerupTimer <= 0
+    ) {
 
         spawnPowerup();
 
+
         powerupTimer =
-            rand(6, 10);
+            rand(
+                6,
+                10
+            );
     }
 }
 
 
 /* =====================================================
-   DRAW GAME
+   DRAW
 ===================================================== */
 
 function drawGame() {
 
-    ctx.fillStyle = "#02030a";
+    ctx.fillStyle =
+        "#02030a";
+
 
     ctx.fillRect(
         0,
@@ -2022,27 +2996,59 @@ function drawGame() {
         H
     );
 
+
     drawStars();
 
-    for (const asteroid of asteroids) {
-        drawAsteroid(asteroid);
+
+    for (
+        const asteroid of asteroids
+    ) {
+
+        drawAsteroid(
+            asteroid
+        );
     }
 
-    for (const coin of coins) {
-        drawCoin(coin);
+
+    for (
+        const coin of coins
+    ) {
+
+        drawCoin(
+            coin
+        );
     }
 
-    for (const power of powerups) {
-        drawPowerup(power);
+
+    for (
+        const power of powerups
+    ) {
+
+        drawPowerup(
+            power
+        );
     }
 
-    for (const bullet of bullets) {
-        drawBullet(bullet);
+
+    for (
+        const bullet of bullets
+    ) {
+
+        drawBullet(
+            bullet
+        );
     }
 
-    for (const particle of particles) {
-        drawParticle(particle);
+
+    for (
+        const particle of particles
+    ) {
+
+        drawParticle(
+            particle
+        );
     }
+
 
     drawShip();
 }
@@ -2058,18 +3064,32 @@ function gameLoop(time) {
         return;
     }
 
-    if (lastTime === 0) {
+
+    if (
+        lastTime === 0
+    ) {
+
         lastTime = time;
     }
 
+
     let dt =
-        (time - lastTime) / 1000;
+        (
+            time -
+            lastTime
+        ) / 1000;
+
 
     lastTime = time;
 
-    if (dt > 0.04) {
+
+    if (
+        dt > 0.04
+    ) {
+
         dt = 0.04;
     }
+
 
     if (!paused) {
 
@@ -2091,43 +3111,56 @@ function gameLoop(time) {
 
         updateSpawning(dt);
 
-        if (input.fire) {
+
+        if (
+            input.fire
+        ) {
+
             shoot();
         }
     }
 
+
     drawGame();
 
-    requestAnimationFrame(gameLoop);
+
+    requestAnimationFrame(
+        gameLoop
+    );
 }
 
 
 /* =====================================================
-   START GAME
+   START
 ===================================================== */
 
 function startGame() {
 
-    console.log("START GAME");
-
     resetGame();
 
+
     running = true;
+
     paused = false;
+
 
     startScreen.classList.add(
         "hidden"
     );
 
+
     pauseScreen.classList.add(
         "hidden"
     );
+
 
     gameOverScreen.classList.add(
         "hidden"
     );
 
+
     lastTime = 0;
+
 
     requestAnimationFrame(
         gameLoop
@@ -2145,7 +3178,16 @@ function pauseGame() {
         return;
     }
 
+
     paused = true;
+
+
+    input.up = false;
+
+    input.down = false;
+
+    input.fire = false;
+
 
     pauseScreen.classList.remove(
         "hidden"
@@ -2159,13 +3201,17 @@ function resumeGame() {
         return;
     }
 
+
     paused = false;
+
 
     pauseScreen.classList.add(
         "hidden"
     );
 
-    lastTime = performance.now();
+
+    lastTime =
+        performance.now();
 }
 
 
@@ -2176,14 +3222,20 @@ function resumeGame() {
 function gameOver() {
 
     running = false;
+
     paused = false;
 
+
     input.up = false;
+
     input.down = false;
+
     input.fire = false;
+
 
     finalScoreElement.textContent =
         "SCORE: " + score;
+
 
     gameOverScreen.classList.remove(
         "hidden"
@@ -2202,12 +3254,18 @@ function activateCheat() {
             .trim()
             .toUpperCase();
 
-    if (code === "ASTRO-AIM") {
+
+    if (
+        code ===
+        "AUTOAIM"
+    ) {
 
         autoAim = true;
 
+
         cheatMessage.textContent =
             "AUTO-AIM ACTIVATED";
+
 
         cheatMessage.style.color =
             "#55ff77";
@@ -2217,6 +3275,7 @@ function activateCheat() {
         cheatMessage.textContent =
             "UNKNOWN CHEAT";
 
+
         cheatMessage.style.color =
             "#ff5555";
     }
@@ -2224,7 +3283,7 @@ function activateCheat() {
 
 
 /* =====================================================
-   BUTTONS
+   BUTTON EVENTS
 ===================================================== */
 
 startButton.addEventListener(
@@ -2255,9 +3314,13 @@ pauseButton.addEventListener(
 
         event.preventDefault();
 
+
         if (paused) {
+
             resumeGame();
+
         } else {
+
             pauseGame();
         }
     }
@@ -2287,7 +3350,7 @@ cheatButton.addEventListener(
 
 
 /* =====================================================
-   TOUCH CONTROLS
+   TOUCH BUTTONS
 ===================================================== */
 
 function holdButton(
@@ -2301,12 +3364,16 @@ function holdButton(
 
         input[property] = true;
 
+
         try {
+
             button.setPointerCapture(
                 event.pointerId
             );
+
         } catch (error) {}
     }
+
 
     function stop(event) {
 
@@ -2315,20 +3382,24 @@ function holdButton(
         input[property] = false;
     }
 
+
     button.addEventListener(
         "pointerdown",
         start
     );
+
 
     button.addEventListener(
         "pointerup",
         stop
     );
 
+
     button.addEventListener(
         "pointercancel",
         stop
     );
+
 
     button.addEventListener(
         "lostpointercapture",
@@ -2342,10 +3413,12 @@ holdButton(
     "up"
 );
 
+
 holdButton(
     downButton,
     "down"
 );
+
 
 holdButton(
     fireButton,
@@ -2357,12 +3430,41 @@ holdButton(
    KEYBOARD
 ===================================================== */
 
+/*
+    ВАЖНО:
+
+    Если пользователь печатает в cheatInput,
+    игра НЕ обрабатывает W/S/стрелки/пробел.
+*/
+
+function isTyping() {
+
+    const element =
+        document.activeElement;
+
+    return (
+        element === cheatInput ||
+        element.tagName === "INPUT" ||
+        element.tagName === "TEXTAREA"
+    );
+}
+
+
 window.addEventListener(
     "keydown",
     function(event) {
 
+        if (
+            isTyping()
+        ) {
+
+            return;
+        }
+
+
         const key =
             event.key.toLowerCase();
+
 
         if (
             key === "arrowup" ||
@@ -2374,6 +3476,7 @@ window.addEventListener(
             event.preventDefault();
         }
 
+
         if (
             key === "arrowdown" ||
             key === "s"
@@ -2383,6 +3486,7 @@ window.addEventListener(
 
             event.preventDefault();
         }
+
 
         if (
             key === " " ||
@@ -2394,14 +3498,18 @@ window.addEventListener(
             event.preventDefault();
         }
 
+
         if (
             key === "p" ||
             key === "escape"
         ) {
 
             if (paused) {
+
                 resumeGame();
+
             } else {
+
                 pauseGame();
             }
 
@@ -2415,27 +3523,41 @@ window.addEventListener(
     "keyup",
     function(event) {
 
+        if (
+            isTyping()
+        ) {
+
+            return;
+        }
+
+
         const key =
             event.key.toLowerCase();
+
 
         if (
             key === "arrowup" ||
             key === "w"
         ) {
+
             input.up = false;
         }
+
 
         if (
             key === "arrowdown" ||
             key === "s"
         ) {
+
             input.down = false;
         }
+
 
         if (
             key === " " ||
             key === "f"
         ) {
+
             input.fire = false;
         }
     }
@@ -2443,7 +3565,7 @@ window.addEventListener(
 
 
 /* =====================================================
-   PREVENT LONG PRESS MENU
+   PREVENT CONTEXT MENU
 ===================================================== */
 
 document.addEventListener(
@@ -2451,8 +3573,10 @@ document.addEventListener(
     function(event) {
 
         if (
-            event.target !== cheatInput
+            event.target !==
+            cheatInput
         ) {
+
             event.preventDefault();
         }
     }
