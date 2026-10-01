@@ -3,604 +3,565 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Space Pilot</title>
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<title>CosmoPilot</title>
 
 <style>
 * {
     box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: #02030a;
-    color: white;
     font-family: monospace;
-    touch-action: none;
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    touch-action: none;
 }
 
-#gameWrap {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #02030a;
-}
-
-#game {
-    position: relative;
-    width: min(100vw, 1100px);
-    height: min(100vh, 620px);
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: #02030a;
-    border: 2px solid #26314f;
-}
-
+button,
 canvas {
-    position: absolute;
+    touch-action: none;
+}
+
+input {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+}
+
+#gameWrapper {
+    position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    background: #02030a;
+}
+
+#gameCanvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100vw, 177.78vh);
+    height: min(56.25vw, 100vh);
+    transform: translate(-50%, -50%);
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    background: #02030a;
 }
 
 #creator {
-    position: absolute;
-    top: 7px;
+    position: fixed;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 20;
-
-    color: #9aff78;
-    font-size: clamp(8px, 1.5vw, 14px);
-    font-weight: bold;
+    color: #ffffff;
+    font-size: 10px;
     letter-spacing: 2px;
-    text-shadow:
-        2px 0 #10240d,
-        -1px 0 #10240d,
-        0 2px #10240d;
-
-    pointer-events: none;
-    white-space: nowrap;
-}
-
-#hud {
-    position: absolute;
-    top: 28px;
-    left: 10px;
-    right: 10px;
     z-index: 20;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-size: clamp(10px, 2vw, 17px);
-    font-weight: bold;
     text-shadow: 2px 2px #000;
     pointer-events: none;
 }
 
-.hudLeft,
-.hudRight {
+/* HUD */
+
+#hud {
+    position: fixed;
+    top: 26px;
+    left: 12px;
+    right: 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.hudBox {
+    color: white;
+    font-size: 14px;
+    text-shadow: 2px 2px #000;
+}
+
+#livesText {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.pixelHeart {
+    position: relative;
+    width: 12px;
+    height: 11px;
+    display: inline-block;
+    background: #ff3030;
+    clip-path: polygon(
+        0 25%,
+        25% 25%,
+        25% 0,
+        50% 0,
+        50% 12%,
+        75% 0,
+        100% 0,
+        100% 50%,
+        75% 50%,
+        75% 75%,
+        50% 100%,
+        25% 75%,
+        0 50%
+    );
+    image-rendering: pixelated;
+}
+
+.pixelHeart.empty {
+    background: #33333f;
+}
+
+#powerText {
+    min-width: 90px;
+    text-align: center;
 }
 
 #pauseButton {
     pointer-events: auto;
-    border: 1px solid #7783a8;
-    background: #11172a;
+    border: 2px solid white;
+    background: #111827;
     color: white;
-    font-family: monospace;
+    width: 42px;
+    height: 34px;
+    font-size: 16px;
     font-weight: bold;
-    font-size: clamp(10px, 2vw, 16px);
-
-    min-width: 42px;
-    min-height: 38px;
-
-    cursor: pointer;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
 #pauseButton:active {
-    transform: scale(.94);
-    background: #26314f;
+    transform: scale(0.92);
 }
 
-.status {
-    display: none;
-    padding: 3px 6px;
-    border: 1px solid currentColor;
-    border-radius: 3px;
-}
-
-#speedStatus {
-    color: #ffe44a;
-}
-
-#shieldStatus {
-    color: #62d8ff;
-}
-
-#aimStatus {
-    color: #ff76f4;
-}
+/* CONTROLS */
 
 #controls {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 15px;
+    z-index: 20;
     pointer-events: none;
 }
 
-.controlButton {
+#leftControls {
     position: absolute;
-    bottom: 14px;
-
-    width: clamp(50px, 10vw, 72px);
-    height: clamp(45px, 9vw, 64px);
-
-    border: 2px solid #66749d;
-    border-radius: 7px;
-
-    background: rgba(15, 21, 40, .82);
-    color: white;
-
-    font-family: monospace;
-    font-size: clamp(15px, 3vw, 25px);
-    font-weight: bold;
-
+    left: 18px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     pointer-events: auto;
-    user-select: none;
-    -webkit-user-select: none;
+}
+
+.controlButton {
+    width: 54px;
+    height: 45px;
+    border: 2px solid white;
+    border-radius: 5px;
+    background: rgba(15, 23, 42, 0.88);
+    color: white;
+    font-size: 23px;
+    font-family: monospace;
+    font-weight: bold;
 }
 
 .controlButton:active {
-    background: rgba(65, 79, 125, .95);
-    transform: scale(.94);
-}
-
-#upButton {
-    left: 14px;
-}
-
-#downButton {
-    left: 14px;
-    bottom: 82px;
+    transform: scale(0.92);
+    background: rgba(50, 70, 100, 0.95);
 }
 
 #fireButton {
-    right: 14px;
-    width: clamp(65px, 13vw, 95px);
-}
-
-#menu,
-#gameOver,
-#pauseMenu {
     position: absolute;
-    inset: 0;
-    z-index: 100;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    background:
-        radial-gradient(circle at center,
-        rgba(15, 31, 65, .82),
-        rgba(1, 3, 10, .97));
-
-    text-align: center;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.title {
-    margin: 0 0 8px;
-
-    color: #9aff78;
-    font-size: clamp(27px, 7vw, 62px);
-    letter-spacing: 5px;
-
-    text-shadow:
-        4px 0 #183515,
-        0 4px #183515;
-}
-
-.subtitle {
-    color: #a9b4d0;
-    font-size: clamp(9px, 2vw, 15px);
-    margin-bottom: 25px;
-}
-
-.menuButton {
-    min-width: 190px;
-    min-height: 50px;
-
-    margin: 6px;
-
-    border: 2px solid #7180a8;
+    right: 18px;
+    bottom: 0;
+    width: 74px;
+    height: 54px;
+    border: 2px solid white;
     border-radius: 5px;
+    background: rgba(60, 20, 20, 0.92);
+    pointer-events: auto;
+}
 
-    background: #10172b;
+#fireButton::before {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 21px;
+    width: 30px;
+    height: 9px;
+    background: #f2f2f2;
+    box-shadow:
+        7px 0 0 #ffffff,
+        14px 0 0 #ffdf4a,
+        21px 0 0 #ff8c32;
+}
+
+#fireButton::after {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 18px;
+    width: 6px;
+    height: 15px;
+    background: #ffffff;
+}
+
+/* OVERLAYS */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.78);
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+.panel {
+    width: min(88vw, 390px);
+    padding: 25px;
+    border: 3px solid white;
+    background: #090d18;
     color: white;
-
-    font-family: monospace;
-    font-size: 17px;
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-.menuButton:hover {
-    background: #1b2848;
-}
-
-.menuButton:active {
-    transform: scale(.96);
-}
-
-.smallInfo {
-    margin-top: 15px;
-    max-width: 420px;
-    padding: 0 15px;
-
-    color: #7985a3;
-    font-size: 10px;
-    line-height: 1.6;
-}
-
-#gameOver h2,
-#pauseMenu h2 {
-    margin: 0 0 18px;
-
-    color: white;
-    font-size: clamp(26px, 6vw, 48px);
-    letter-spacing: 3px;
-}
-
-#finalScore {
-    color: #ffe44a;
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
-#pauseMenu input {
-    width: min(260px, 80vw);
-    height: 45px;
-
-    margin: 8px 0;
-
-    border: 2px solid #566382;
-    border-radius: 4px;
-
-    background: #080c18;
-    color: white;
-
     text-align: center;
-    font-family: monospace;
-    font-size: 16px;
-
-    outline: none;
+    box-shadow: 0 0 0 4px #172033;
 }
 
-#pauseMenu input:focus {
-    border-color: #9aff78;
+.panel h1 {
+    margin: 0 0 12px;
+    font-size: 28px;
+}
+
+.panel p {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.mainButton {
+    margin-top: 12px;
+    width: 100%;
+    min-height: 46px;
+    border: 2px solid white;
+    background: #182338;
+    color: white;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.mainButton:active {
+    transform: scale(0.97);
+}
+
+/* CHEAT */
+
+#cheatInput {
+    width: 100%;
+    height: 42px;
+    margin-top: 14px;
+    padding: 8px;
+    border: 2px solid #777;
+    background: #02030a;
+    color: white;
+    font-family: monospace;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 #cheatMessage {
     min-height: 18px;
-    margin: 5px 0 10px;
-
-    color: #ff76f4;
+    margin-top: 8px;
     font-size: 11px;
 }
 
-#orientation {
-    display: none;
+/* PORTRAIT */
+
+#portraitWarning {
     position: fixed;
     inset: 0;
-    z-index: 999;
-
-    background: #02030a;
-    color: white;
-
+    z-index: 100;
+    display: none;
     align-items: center;
     justify-content: center;
+    background: #02030a;
+    color: white;
     text-align: center;
-
-    font-family: monospace;
-    font-size: 18px;
     padding: 30px;
 }
 
-@media (orientation: portrait) and (max-width: 700px) {
-    #orientation {
-        display: flex;
-    }
+#portraitWarning .portraitBox {
+    border: 3px solid white;
+    padding: 25px;
+}
 
-    #gameWrap {
-        display: none;
+#portraitIcon {
+    width: 36px;
+    height: 55px;
+    border: 4px solid white;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+#portraitIcon::after {
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: white;
+    left: 11px;
+    bottom: 4px;
+}
+
+@media (orientation: portrait) {
+    #portraitWarning {
+        display: flex;
     }
 }
 
-@media (max-height: 430px) {
-    #creator {
-        top: 3px;
-        font-size: 8px;
-    }
+/* POWERUP PIXEL ICONS */
 
-    #hud {
-        top: 20px;
-    }
+.powerIcon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
 
-    .controlButton {
-        bottom: 7px;
-        height: 45px;
-    }
+.pixelShield {
+    width: 15px;
+    height: 18px;
+    background: #44aaff;
+    clip-path: polygon(
+        50% 0,
+        100% 18%,
+        90% 68%,
+        50% 100%,
+        10% 68%,
+        0 18%
+    );
+    box-shadow: inset 0 0 0 2px #d9f4ff;
+}
 
-    #downButton {
-        bottom: 58px;
-    }
+.pixelSpeed {
+    position: relative;
+    width: 21px;
+    height: 16px;
+}
+
+.pixelSpeed::before,
+.pixelSpeed::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 6px;
+    background: #ffe600;
+    clip-path: polygon(
+        0 0,
+        55% 0,
+        55% 35%,
+        100% 35%,
+        100% 65%,
+        55% 65%,
+        55% 100%,
+        0 100%,
+        45% 50%
+    );
+}
+
+.pixelSpeed::before {
+    left: 0;
+    top: 0;
+}
+
+.pixelSpeed::after {
+    left: 9px;
+    top: 8px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="orientation">
-    ↻<br><br>
-    ПОВЕРНИ ТЕЛЕФОН<br>
-    ГОРИЗОНТАЛЬНО
+<div id="gameWrapper">
+
+    <canvas id="gameCanvas" width="480" height="270"></canvas>
+
+    <div id="creator">CREATED BY GETOGENOV</div>
+
+    <div id="hud">
+        <div class="hudBox" id="livesText"></div>
+
+        <div class="hudBox" id="scoreText">
+            SCORE: 0
+        </div>
+
+        <div class="hudBox" id="powerText"></div>
+
+        <button id="pauseButton">II</button>
+    </div>
+
+    <div id="controls">
+
+        <div id="leftControls">
+            <button class="controlButton" id="upButton">▲</button>
+            <button class="controlButton" id="downButton">▼</button>
+        </div>
+
+        <button id="fireButton"></button>
+
+    </div>
+
 </div>
 
-<div id="gameWrap">
+<!-- START -->
 
-    <div id="game">
+<div class="overlay" id="startOverlay">
+    <div class="panel">
+        <h1>COSMOPILOT</h1>
 
-        <canvas id="canvas" width="480" height="270"></canvas>
+        <p>
+            Космический пилот.<br>
+            Уничтожай астероиды,<br>
+            собирай монеты и бонусы.
+        </p>
 
-        <div id="creator">
-            CREATED BY GETOGENOV
+        <button class="mainButton" id="startButton">
+            START GAME
+        </button>
+    </div>
+</div>
+
+<!-- PAUSE -->
+
+<div class="overlay hidden" id="pauseOverlay">
+    <div class="panel">
+
+        <h1>PAUSED</h1>
+
+        <button class="mainButton" id="resumeButton">
+            RESUME
+        </button>
+
+        <input
+            id="cheatInput"
+            type="text"
+            maxlength="30"
+            placeholder="ENTER CHEAT"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
+            spellcheck="false"
+        >
+
+        <button class="mainButton" id="activateCheatButton">
+            ACTIVATE CHEAT
+        </button>
+
+        <div id="cheatMessage"></div>
+
+    </div>
+</div>
+
+<!-- GAME OVER -->
+
+<div class="overlay hidden" id="gameOverOverlay">
+    <div class="panel">
+
+        <h1>GAME OVER</h1>
+
+        <p id="finalScore">
+            SCORE: 0
+        </p>
+
+        <button class="mainButton" id="restartButton">
+            PLAY AGAIN
+        </button>
+
+    </div>
+</div>
+
+<!-- PORTRAIT -->
+
+<div id="portraitWarning">
+    <div class="portraitBox">
+        <div id="portraitIcon"></div>
+
+        <div>
+            ПОВЕРНИ ТЕЛЕФОН<br>
+            В ГОРИЗОНТАЛЬНОЕ ПОЛОЖЕНИЕ
         </div>
-
-        <div id="hud">
-
-            <div class="hudLeft">
-                <span id="lives">❤️❤️❤️</span>
-                <span>🪙 <span id="score">0</span></span>
-
-                <span id="speedStatus" class="status">
-                    ⚡ <span id="speedTimer">0</span>
-                </span>
-
-                <span id="shieldStatus" class="status">
-                    🛡️ <span id="shieldTimer">0</span>
-                </span>
-
-                <span id="aimStatus" class="status">
-                    🎯 AIM
-                </span>
-            </div>
-
-            <div class="hudRight">
-                <button id="pauseButton">Ⅱ</button>
-            </div>
-
-        </div>
-
-        <div id="controls">
-
-            <button
-                id="upButton"
-                class="controlButton">
-                ▲
-            </button>
-
-            <button
-                id="downButton"
-                class="controlButton">
-                ▼
-            </button>
-
-            <button
-                id="fireButton"
-                class="controlButton">
-                🔫
-            </button>
-
-        </div>
-
-        <!-- START MENU -->
-
-        <div id="menu">
-
-            <h1 class="title">
-                SPACE PILOT
-            </h1>
-
-            <div class="subtitle">
-                PIXEL SPACE ADVENTURE
-            </div>
-
-            <button
-                id="startButton"
-                class="menuButton">
-                ▶ START
-            </button>
-
-            <div class="smallInfo">
-                ▲ ▼ — движение<br>
-                🔫 — огонь<br>
-                ⏸ — пауза<br>
-                Собирай монеты и бонусы.<br>
-                Уничтожай астероиды.
-            </div>
-
-        </div>
-
-        <!-- PAUSE -->
-
-        <div id="pauseMenu" class="hidden">
-
-            <h2>PAUSED</h2>
-
-            <button
-                id="resumeButton"
-                class="menuButton">
-                ▶ ПРОДОЛЖИТЬ
-            </button>
-
-            <button
-                id="restartPauseButton"
-                class="menuButton">
-                🔄 ЗАНОВО
-            </button>
-
-            <input
-                id="cheatInput"
-                type="text"
-                autocomplete="off"
-                autocapitalize="characters"
-                placeholder="ВВЕДИ ЧИТ-КОД">
-
-            <button
-                id="cheatButton"
-                class="menuButton">
-                🔐 АКТИВИРОВАТЬ
-            </button>
-
-            <div id="cheatMessage"></div>
-
-            <button
-                id="menuButtonFromPause"
-                class="menuButton">
-                🏠 МЕНЮ
-            </button>
-
-        </div>
-
-        <!-- GAME OVER -->
-
-        <div id="gameOver" class="hidden">
-
-            <h2>GAME OVER</h2>
-
-            <div id="finalScore">
-                SCORE: 0
-            </div>
-
-            <button
-                id="restartButton"
-                class="menuButton">
-                🔄 RESTART
-            </button>
-
-            <button
-                id="menuButton"
-                class="menuButton">
-                🏠 MENU
-            </button>
-
-        </div>
-
     </div>
 </div>
 
 <script>
 "use strict";
 
-/* =========================================================
-   BASIC SETUP
-========================================================= */
+/* =========================
+   CANVAS
+========================= */
 
-const canvas = document.getElementById("canvas");
+const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-
-ctx.imageSmoothingEnabled = false;
 
 const W = canvas.width;
 const H = canvas.height;
 
-/* =========================================================
-   UI
-========================================================= */
+ctx.imageSmoothingEnabled = false;
 
-const menu = document.getElementById("menu");
-const pauseMenu = document.getElementById("pauseMenu");
-const gameOver = document.getElementById("gameOver");
+/* =========================
+   UI
+========================= */
+
+const startOverlay = document.getElementById("startOverlay");
+const pauseOverlay = document.getElementById("pauseOverlay");
+const gameOverOverlay = document.getElementById("gameOverOverlay");
 
 const startButton = document.getElementById("startButton");
-const pauseButton = document.getElementById("pauseButton");
 const resumeButton = document.getElementById("resumeButton");
-
 const restartButton = document.getElementById("restartButton");
-const restartPauseButton =
-    document.getElementById("restartPauseButton");
 
-const menuButton =
-    document.getElementById("menuButton");
+const pauseButton = document.getElementById("pauseButton");
 
-const menuButtonFromPause =
-    document.getElementById("menuButtonFromPause");
+const upButton = document.getElementById("upButton");
+const downButton = document.getElementById("downButton");
+const fireButton = document.getElementById("fireButton");
 
-const cheatInput =
-    document.getElementById("cheatInput");
+const livesText = document.getElementById("livesText");
+const scoreText = document.getElementById("scoreText");
+const powerText = document.getElementById("powerText");
 
-const cheatButton =
-    document.getElementById("cheatButton");
+const cheatInput = document.getElementById("cheatInput");
+const activateCheatButton = document.getElementById("activateCheatButton");
+const cheatMessage = document.getElementById("cheatMessage");
 
-const cheatMessage =
-    document.getElementById("cheatMessage");
+const finalScore = document.getElementById("finalScore");
 
-const livesElement =
-    document.getElementById("lives");
-
-const scoreElement =
-    document.getElementById("score");
-
-const finalScoreElement =
-    document.getElementById("finalScore");
-
-const speedStatus =
-    document.getElementById("speedStatus");
-
-const shieldStatus =
-    document.getElementById("shieldStatus");
-
-const aimStatus =
-    document.getElementById("aimStatus");
-
-const speedTimerElement =
-    document.getElementById("speedTimer");
-
-const shieldTimerElement =
-    document.getElementById("shieldTimer");
-
-/* =========================================================
+/* =========================
    GAME STATE
-========================================================= */
+========================= */
 
 let gameRunning = false;
 let paused = false;
@@ -609,52 +570,58 @@ let score = 0;
 let lives = 3;
 
 let lastTime = 0;
-let asteroidTimer = 0;
+
+let spawnTimer = 0;
 let coinTimer = 0;
-let powerTimer = 0;
+let powerupTimer = 0;
 
-let difficulty = 1;
+let fireTimer = 0;
+let invulnerabilityTimer = 0;
 
-let speedBoostTimer = 0;
 let shieldTimer = 0;
+let speedTimer = 0;
+
+let speedAnimationTime = 0;
 
 let autoAim = false;
 
-let fireCooldown = 0;
-
-let invulnerabilityTimer = 0;
-
-/* =========================================================
+/* =========================
    SHIP
-========================================================= */
+========================= */
 
 const ship = {
-    x: 70,
+    x: 75,
     y: H / 2,
-
-    width: 38,
-    height: 24,
-
+    width: 25,
+    height: 18,
     speed: 145,
-
-    movingUp: false,
-    movingDown: false
+    fireDelay: 0.28
 };
 
-/* =========================================================
+/* =========================
+   INPUT
+========================= */
+
+const keys = {
+    up: false,
+    down: false,
+    fire: false
+};
+
+/* =========================
    OBJECT ARRAYS
-========================================================= */
+========================= */
 
-const stars = [];
-const asteroids = [];
-const bullets = [];
-const coins = [];
-const powerups = [];
-const particles = [];
+let bullets = [];
+let asteroids = [];
+let coins = [];
+let powerups = [];
+let particles = [];
+let stars = [];
 
-/* =========================================================
-   RANDOM HELPERS
-========================================================= */
+/* =========================
+   RANDOM
+========================= */
 
 function random(min, max) {
     return Math.random() * (max - min) + min;
@@ -664,315 +631,285 @@ function randomInt(min, max) {
     return Math.floor(random(min, max + 1));
 }
 
-/* =========================================================
+/* =========================
    STARS
-========================================================= */
+========================= */
 
 function createStars() {
-
-    stars.length = 0;
+    stars = [];
 
     for (let i = 0; i < 90; i++) {
-
         stars.push({
             x: random(0, W),
             y: random(0, H),
             size: randomInt(1, 2),
-            speed: random(8, 40),
-            brightness: random(.3, 1)
+            speed: random(8, 28),
+            brightness: random(0.3, 1)
         });
     }
 }
 
-/* =========================================================
-   BACKGROUND
-========================================================= */
+/* =========================
+   RESET
+========================= */
 
-function drawBackground(dt) {
+function resetGame() {
+    score = 0;
+    lives = 3;
 
-    ctx.fillStyle = "#02030a";
-    ctx.fillRect(0, 0, W, H);
+    bullets = [];
+    asteroids = [];
+    coins = [];
+    powerups = [];
+    particles = [];
 
-    for (const star of stars) {
+    ship.x = 75;
+    ship.y = H / 2;
 
-        star.x -= star.speed * dt;
+    spawnTimer = 0;
+    coinTimer = 0;
+    powerupTimer = 0;
 
-        if (star.x < 0) {
-            star.x = W;
-            star.y = random(0, H);
-        }
+    fireTimer = 0;
+    invulnerabilityTimer = 0;
 
-        const alpha =
-            Math.max(.2, star.brightness);
+    shieldTimer = 0;
+    speedTimer = 0;
 
-        ctx.fillStyle =
-            `rgba(190,220,255,${alpha})`;
+    speedAnimationTime = 0;
 
-        ctx.fillRect(
-            Math.floor(star.x),
-            Math.floor(star.y),
-            star.size,
-            star.size
-        );
-    }
+    autoAim = false;
 
-    /* distant lines */
+    cheatInput.value = "";
+    cheatMessage.textContent = "";
 
-    ctx.fillStyle = "rgba(50,70,110,.12)";
+    createStars();
 
-    for (let y = 0; y < H; y += 30) {
-
-        ctx.fillRect(
-            0,
-            y,
-            W,
-            1
-        );
-    }
+    updateHUD();
 }
 
-/* =========================================================
-   SHIP
-========================================================= */
+/* =========================
+   HUD
+========================= */
+
+function updateHUD() {
+
+    livesText.innerHTML = "";
+
+    for (let i = 0; i < 3; i++) {
+        const heart = document.createElement("span");
+
+        heart.className = "pixelHeart";
+
+        if (i >= lives) {
+            heart.classList.add("empty");
+        }
+
+        livesText.appendChild(heart);
+    }
+
+    scoreText.textContent = "SCORE: " + score;
+
+    let power = "";
+
+    if (shieldTimer > 0) {
+        power +=
+            '<span class="powerIcon pixelShield"></span>' +
+            " " + shieldTimer.toFixed(1);
+    }
+
+    if (speedTimer > 0) {
+
+        if (power !== "") {
+            power += "  ";
+        }
+
+        power +=
+            '<span class="powerIcon pixelSpeed"></span>' +
+            " " + speedTimer.toFixed(1);
+    }
+
+    powerText.innerHTML = power;
+}
+
+/* =========================
+   SHIP DRAW
+========================= */
 
 function drawShip() {
 
     ctx.save();
 
-    ctx.translate(ship.x, ship.y);
-
-    /* Shield */
-
-    if (shieldTimer > 0) {
-
-        ctx.strokeStyle = "#52d9ff";
-        ctx.lineWidth = 2;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            0,
-            0,
-            25,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.stroke();
-
-        ctx.fillStyle =
-            "rgba(70,210,255,.08)";
-
-        ctx.fill();
+    if (invulnerabilityTimer > 0) {
+        if (Math.floor(invulnerabilityTimer * 12) % 2 === 0) {
+            ctx.globalAlpha = 0.35;
+        }
     }
+
+    const x = Math.round(ship.x);
+    const y = Math.round(ship.y);
 
     /* ship shadow */
 
-    ctx.fillStyle = "#071006";
+    ctx.fillStyle = "#000";
+    ctx.fillRect(x - 8, y - 7, 25, 16);
 
-    ctx.fillRect(
-        -18,
-        -8,
-        36,
-        17
-    );
+    /* main body */
 
-    /* main green hull */
+    ctx.fillStyle = "#d8e4ff";
 
-    ctx.fillStyle = "#63d348";
+    ctx.fillRect(x - 4, y - 7, 13, 14);
+    ctx.fillRect(x + 8, y - 4, 7, 8);
+    ctx.fillRect(x + 15, y - 2, 6, 4);
 
-    ctx.beginPath();
+    /* nose */
 
-    ctx.moveTo(22, 0);
-    ctx.lineTo(-13, -12);
-    ctx.lineTo(-20, -7);
-    ctx.lineTo(-15, 0);
-    ctx.lineTo(-20, 7);
-    ctx.lineTo(-13, 12);
-    ctx.closePath();
+    ctx.fillStyle = "#ffffff";
 
-    ctx.fill();
+    ctx.fillRect(x + 20, y - 1, 5, 2);
 
-    /* lighter upper section */
+    /* wings */
 
-    ctx.fillStyle = "#a0ef65";
+    ctx.fillStyle = "#6e7fa8";
 
-    ctx.beginPath();
-
-    ctx.moveTo(20, 0);
-    ctx.lineTo(-9, -9);
-    ctx.lineTo(-3, -2);
-    ctx.closePath();
-
-    ctx.fill();
+    ctx.fillRect(x - 9, y - 8, 9, 5);
+    ctx.fillRect(x - 9, y + 3, 9, 5);
 
     /* cockpit */
 
-    ctx.fillStyle = "#79d9e8";
+    ctx.fillStyle = "#32d9ff";
 
-    ctx.fillRect(
-        1,
-        -5,
-        9,
-        7
-    );
+    ctx.fillRect(x + 2, y - 4, 6, 8);
 
-    ctx.fillStyle = "#d4ffff";
-
-    ctx.fillRect(
-        3,
-        -4,
-        4,
-        2
-    );
+    ctx.fillStyle = "#baf7ff";
+    ctx.fillRect(x + 4, y - 3, 2, 2);
 
     /* engine */
 
-    ctx.fillStyle = "#ffb52d";
+    ctx.fillStyle = "#ff9d2e";
 
-    ctx.fillRect(
-        -21,
-        -4,
-        7,
-        8
+    ctx.fillRect(x - 13, y - 3, 5, 6);
+
+    ctx.fillStyle = "#fff05a";
+
+    ctx.fillRect(x - 18, y - 2, 5, 4);
+
+    ctx.restore();
+
+    drawShield();
+
+    if (speedTimer > 0) {
+        drawSpeedTrail();
+    }
+}
+
+/* =========================
+   SHIELD
+========================= */
+
+function drawShield() {
+
+    if (shieldTimer <= 0) {
+        return;
+    }
+
+    const pulse =
+        Math.sin(performance.now() * 0.008) * 2;
+
+    ctx.save();
+
+    ctx.strokeStyle = "#4fdcff";
+    ctx.lineWidth = 2;
+
+    ctx.globalAlpha =
+        0.55 + Math.sin(performance.now() * 0.01) * 0.15;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ship.x + 3,
+        ship.y,
+        22 + pulse,
+        0,
+        Math.PI * 2
     );
 
-    ctx.fillStyle = "#fff06a";
+    ctx.stroke();
 
-    ctx.fillRect(
-        -24,
-        -2,
-        4,
-        4
+    ctx.strokeStyle = "#a9f5ff";
+    ctx.globalAlpha *= 0.5;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ship.x + 3,
+        ship.y,
+        25 + pulse,
+        0,
+        Math.PI * 2
     );
+
+    ctx.stroke();
 
     ctx.restore();
 }
 
-/* =========================================================
-   BULLETS
-========================================================= */
+/* =========================
+   SPEED TRAIL
+========================= */
 
-function shoot() {
+function drawSpeedTrail() {
 
-    if (!gameRunning || paused) {
-        return;
-    }
+    const baseX = ship.x - 16;
+    const baseY = ship.y;
 
-    if (fireCooldown > 0) {
-        return;
-    }
+    ctx.save();
 
-    let target = null;
+    for (let i = 0; i < 12; i++) {
 
-    if (autoAim) {
-        target = getNearestAsteroid();
-    }
+        const offset =
+            (speedAnimationTime * 130 + i * 23) % 115;
 
-    const bullet = {
-        x: ship.x + 20,
-        y: ship.y,
+        const length =
+            8 + (i % 4) * 5;
 
-        speed: 300,
+        const x =
+            baseX - offset;
 
-        width: 9,
-        height: 2,
+        const y =
+            baseY + ((i % 5) - 2) * 4;
 
-        targetX: target ? target.x : null,
-        targetY: target ? target.y : null
-    };
+        const mix =
+            (Math.sin(speedAnimationTime * 8 + i) + 1) / 2;
 
-    bullets.push(bullet);
+        const r = Math.round(255 * (1 - mix));
+        const g = Math.round(220 + 35 * mix);
+        const b = Math.round(30 + 30 * mix);
 
-    fireCooldown =
-        speedBoostTimer > 0 ? .10 : .18;
+        ctx.fillStyle =
+            "rgb(" + r + "," + g + "," + b + ")";
 
-    createParticles(
-        bullet.x,
-        bullet.y,
-        "#8aff55",
-        3
-    );
-}
-
-function updateBullets(dt) {
-
-    for (let i = bullets.length - 1; i >= 0; i--) {
-
-        const bullet = bullets[i];
-
-        if (autoAim && bullet.targetX !== null) {
-
-            const dx = bullet.targetX - bullet.x;
-            const dy = bullet.targetY - bullet.y;
-
-            const distance =
-                Math.sqrt(dx * dx + dy * dy);
-
-            if (distance > 1) {
-
-                const aimSpeed = 250;
-
-                bullet.x +=
-                    (dx / distance) *
-                    aimSpeed *
-                    dt;
-
-                bullet.y +=
-                    (dy / distance) *
-                    aimSpeed *
-                    dt;
-            }
-
-        } else {
-
-            bullet.x +=
-                bullet.speed * dt;
-        }
-
-        if (
-            bullet.x > W + 20 ||
-            bullet.y < -20 ||
-            bullet.y > H + 20
-        ) {
-
-            bullets.splice(i, 1);
-        }
-    }
-}
-
-function drawBullets() {
-
-    for (const bullet of bullets) {
-
-        ctx.fillStyle = "#a6ff6a";
+        ctx.globalAlpha =
+            0.25 + (1 - offset / 115) * 0.55;
 
         ctx.fillRect(
-            Math.floor(bullet.x),
-            Math.floor(bullet.y),
-            bullet.width,
-            bullet.height
-        );
-
-        ctx.fillStyle = "#eaffd7";
-
-        ctx.fillRect(
-            Math.floor(bullet.x + 2),
-            Math.floor(bullet.y),
-            4,
+            Math.round(x),
+            Math.round(y),
+            length,
             2
         );
     }
+
+    ctx.restore();
 }
 
-/* =========================================================
+/* =========================
    ASTEROIDS
-========================================================= */
+========================= */
 
-function createAsteroid() {
+function spawnAsteroid() {
 
-    const radius =
-        random(11, 20);
+    const radius = random(10, 23);
 
     const points = randomInt(7, 10);
 
@@ -983,533 +920,359 @@ function createAsteroid() {
         const angle =
             (Math.PI * 2 / points) * i;
 
-        const distance =
-            radius * random(.75, 1.25);
+        const r =
+            radius * random(0.72, 1.18);
 
         vertices.push({
-            x: Math.cos(angle) * distance,
-            y: Math.sin(angle) * distance
-        });
-    }
-
-    const craters = [];
-
-    for (let i = 0; i < randomInt(2, 4); i++) {
-
-        craters.push({
-            x: random(-radius * .5, radius * .5),
-            y: random(-radius * .5, radius * .5),
-            size: random(2, 5)
+            x: Math.cos(angle) * r,
+            y: Math.sin(angle) * r
         });
     }
 
     asteroids.push({
-
-        x: W + radius + 10,
+        x: W + radius,
         y: random(25, H - 25),
-
         radius,
-        vertices,
-        craters,
-
-        speed:
-            random(70, 105) +
-            difficulty * 10,
-
-        rotation:
-            random(-1.5, 1.5),
-
-        angle: 0
-    });
-}
-
-function updateAsteroids(dt) {
-
-    for (let i = asteroids.length - 1; i >= 0; i--) {
-
-        const asteroid = asteroids[i];
-
-        asteroid.x -=
-            asteroid.speed * dt;
-
-        asteroid.angle +=
-            asteroid.rotation * dt;
-
-        if (asteroid.x < -60) {
-
-            asteroids.splice(i, 1);
-            continue;
-        }
-
-        if (
-            collisionCircle(
-                ship.x,
-                ship.y,
-                16,
-                asteroid.x,
-                asteroid.y,
-                asteroid.radius
-            )
-        ) {
-
-            hitAsteroid(i);
-        }
-    }
-}
-
-function drawAsteroids() {
-
-    for (const asteroid of asteroids) {
-
-        ctx.save();
-
-        ctx.translate(
-            Math.floor(asteroid.x),
-            Math.floor(asteroid.y)
-        );
-
-        ctx.rotate(asteroid.angle);
-
-        /* rock */
-
-        ctx.fillStyle = "#59606a";
-
-        ctx.beginPath();
-
-        for (
-            let i = 0;
-            i < asteroid.vertices.length;
-            i++
-        ) {
-
-            const p =
-                asteroid.vertices[i];
-
-            if (i === 0) {
-                ctx.moveTo(p.x, p.y);
-            } else {
-                ctx.lineTo(p.x, p.y);
-            }
-        }
-
-        ctx.closePath();
-        ctx.fill();
-
-        /* dark edge */
-
-        ctx.strokeStyle = "#303640";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        /* craters */
-
-        for (const crater of asteroid.craters) {
-
-            ctx.fillStyle = "#363b42";
-
-            ctx.fillRect(
-                Math.floor(
-                    crater.x - crater.size / 2
-                ),
-                Math.floor(
-                    crater.y - crater.size / 2
-                ),
-                Math.floor(crater.size),
-                Math.floor(crater.size)
-            );
-
-            ctx.fillStyle = "#717982";
-
-            ctx.fillRect(
-                Math.floor(
-                    crater.x - crater.size / 2
-                ),
-                Math.floor(
-                    crater.y - crater.size / 2
-                ),
-                1,
-                1
-            );
-        }
-
-        ctx.restore();
-    }
-}
-
-/* =========================================================
-   COINS
-========================================================= */
-
-function createCoin() {
-
-    coins.push({
-
-        x: W + 15,
-        y: random(25, H - 25),
-
-        radius: 8,
-
-        speed: 90 + difficulty * 7,
-
+        speed: random(55, 105),
         rotation: random(0, Math.PI * 2),
-
-        spin: random(4, 7)
+        rotationSpeed: random(-1.2, 1.2),
+        vertices
     });
 }
 
-function updateCoins(dt) {
+/* =========================
+   DRAW ASTEROID
+========================= */
 
-    for (let i = coins.length - 1; i >= 0; i--) {
-
-        const coin = coins[i];
-
-        coin.x -=
-            coin.speed * dt;
-
-        coin.rotation +=
-            coin.spin * dt;
-
-        if (coin.x < -20) {
-
-            coins.splice(i, 1);
-            continue;
-        }
-
-        if (
-            collisionCircle(
-                ship.x,
-                ship.y,
-                15,
-                coin.x,
-                coin.y,
-                coin.radius
-            )
-        ) {
-
-            score += 10;
-
-            createParticles(
-                coin.x,
-                coin.y,
-                "#ffe44a",
-                12
-            );
-
-            coins.splice(i, 1);
-
-            updateHUD();
-        }
-    }
-}
-
-function drawCoin(coin) {
+function drawAsteroid(a) {
 
     ctx.save();
 
     ctx.translate(
-        Math.floor(coin.x),
-        Math.floor(coin.y)
+        Math.round(a.x),
+        Math.round(a.y)
     );
 
-    /*
-       Симулируем вращение монеты:
-       она становится уже/шире по X.
-    */
+    ctx.rotate(a.rotation);
 
-    const width =
-        Math.abs(Math.cos(coin.rotation)) *
-        coin.radius;
+    ctx.fillStyle = "#6b7280";
 
-    ctx.fillStyle = "#ffd83d";
+    ctx.beginPath();
+
+    a.vertices.forEach((v, i) => {
+
+        if (i === 0) {
+            ctx.moveTo(v.x, v.y);
+        } else {
+            ctx.lineTo(v.x, v.y);
+        }
+
+    });
+
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = "#9ca3af";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    /* craters */
+
+    ctx.fillStyle = "#414754";
 
     ctx.fillRect(
-        -Math.max(2, width),
-        -coin.radius,
-        Math.max(4, width * 2),
-        coin.radius * 2
+        -a.radius * 0.45,
+        -a.radius * 0.2,
+        5,
+        4
     );
 
-    ctx.strokeStyle = "#fff18a";
-    ctx.lineWidth = 1;
-
-    ctx.strokeRect(
-        -Math.max(2, width),
-        -coin.radius,
-        Math.max(4, width * 2),
-        coin.radius * 2
-    );
-
-    /* star */
-
-    ctx.fillStyle = "#fff8b0";
-
-    const starScale =
-        Math.max(.35, width / coin.radius);
-
-    drawStar(
-        0,
-        0,
+    ctx.fillRect(
+        a.radius * 0.15,
+        -a.radius * 0.55,
         4,
-        2,
-        starScale
+        4
+    );
+
+    ctx.fillRect(
+        a.radius * 0.15,
+        a.radius * 0.2,
+        6,
+        5
+    );
+
+    ctx.fillRect(
+        -a.radius * 0.55,
+        a.radius * 0.35,
+        4,
+        3
     );
 
     ctx.restore();
 }
 
-function drawStar(
-    x,
-    y,
-    outer,
-    inner,
-    scale = 1
-) {
+/* =========================
+   COINS
+========================= */
 
-    ctx.beginPath();
+function spawnCoin() {
 
-    for (let i = 0; i < 10; i++) {
-
-        const radius =
-            (i % 2 === 0 ? outer : inner) *
-            scale;
-
-        const angle =
-            -Math.PI / 2 +
-            i * Math.PI / 5;
-
-        const px =
-            x + Math.cos(angle) * radius;
-
-        const py =
-            y + Math.sin(angle) * radius;
-
-        if (i === 0) {
-            ctx.moveTo(px, py);
-        } else {
-            ctx.lineTo(px, py);
-        }
-    }
-
-    ctx.closePath();
-    ctx.fill();
+    coins.push({
+        x: W + 10,
+        y: random(25, H - 25),
+        speed: random(70, 105),
+        rotation: random(0, Math.PI * 2),
+        rotationSpeed: random(4, 8),
+        radius: 6
+    });
 }
 
-/* =========================================================
-   POWERUPS
-========================================================= */
+function drawCoin(c) {
 
-function createPowerup() {
+    ctx.save();
+
+    ctx.translate(
+        Math.round(c.x),
+        Math.round(c.y)
+    );
+
+    const width =
+        Math.max(
+            2,
+            Math.abs(Math.cos(c.rotation)) * 6
+        );
+
+    ctx.fillStyle = "#ffe44d";
+
+    ctx.fillRect(
+        -width / 2,
+        -6,
+        width,
+        12
+    );
+
+    ctx.fillStyle = "#fff6a3";
+
+    ctx.fillRect(
+        -width / 2,
+        -4,
+        Math.max(1, width / 2),
+        2
+    );
+
+    ctx.restore();
+}
+
+/* =========================
+   POWERUPS
+========================= */
+
+function spawnPowerup() {
 
     const type =
-        Math.random() < .5
-            ? "speed"
-            : "shield";
+        Math.random() < 0.5
+            ? "shield"
+            : "speed";
 
     powerups.push({
-
+        x: W + 15,
+        y: random(30, H - 30),
+        speed: 75,
         type,
-
-        x: W + 20,
-        y: random(35, H - 35),
-
-        size: 10,
-
-        speed: 80 + difficulty * 5,
-
         pulse: random(0, Math.PI * 2)
     });
 }
 
-function updatePowerups(dt) {
+function drawPowerup(p) {
 
-    for (let i = powerups.length - 1; i >= 0; i--) {
+    ctx.save();
 
-        const power = powerups[i];
+    ctx.translate(
+        Math.round(p.x),
+        Math.round(p.y)
+    );
 
-        power.x -=
-            power.speed * dt;
+    const pulse =
+        Math.sin(performance.now() * 0.006 + p.pulse) * 1.5;
 
-        power.pulse +=
-            dt * 5;
+    if (p.type === "shield") {
 
-        if (power.x < -30) {
+        ctx.fillStyle = "#3dc9ff";
 
-            powerups.splice(i, 1);
-            continue;
-        }
+        ctx.beginPath();
 
-        if (
-            collisionCircle(
-                ship.x,
-                ship.y,
-                15,
-                power.x,
-                power.y,
-                power.size
-            )
-        ) {
+        ctx.moveTo(0, -9 - pulse);
+        ctx.lineTo(8, -5);
+        ctx.lineTo(7, 4);
+        ctx.lineTo(0, 10);
+        ctx.lineTo(-7, 4);
+        ctx.lineTo(-8, -5);
 
-            activatePowerup(
-                power.type
-            );
+        ctx.closePath();
+        ctx.fill();
 
-            createParticles(
-                power.x,
-                power.y,
-                power.type === "speed"
-                    ? "#ffe44a"
-                    : "#58dfff",
-                16
-            );
+        ctx.fillStyle = "#bdf5ff";
 
-            powerups.splice(i, 1);
-        }
-    }
-}
-
-function drawPowerups() {
-
-    for (const power of powerups) {
-
-        const pulse =
-            Math.sin(power.pulse) * 2;
-
-        ctx.save();
-
-        ctx.translate(
-            Math.floor(power.x),
-            Math.floor(power.y)
-        );
-
-        ctx.fillStyle =
-            power.type === "speed"
-                ? "#ffe44a"
-                : "#58dfff";
-
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1;
-
-        ctx.fillRect(
-            -10 - pulse / 2,
-            -10 - pulse / 2,
-            20 + pulse,
-            20 + pulse
-        );
-
-        ctx.strokeRect(
-            -10 - pulse / 2,
-            -10 - pulse / 2,
-            20 + pulse,
-            20 + pulse
-        );
-
-        ctx.fillStyle = "#10151f";
-
-        ctx.font = "bold 12px monospace";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        ctx.fillText(
-            power.type === "speed"
-                ? "⚡"
-                : "🛡",
-            0,
-            1
-        );
-
-        ctx.restore();
-    }
-}
-
-function activatePowerup(type) {
-
-    if (type === "speed") {
-
-        speedBoostTimer = 5;
+        ctx.fillRect(-2, -5, 4, 8);
 
     } else {
 
-        shieldTimer = 6;
+        ctx.fillStyle = "#ffe600";
+
+        /* first arrow */
+
+        ctx.fillRect(-9, -5, 7, 3);
+        ctx.fillRect(-5, -2, 7, 3);
+        ctx.fillRect(-2, 1, 4, 3);
+
+        /* second arrow */
+
+        ctx.fillRect(1, -5, 7, 3);
+        ctx.fillRect(5, -2, 7, 3);
+        ctx.fillRect(8, 1, 4, 3);
     }
 
-    updateHUD();
+    ctx.restore();
 }
 
-/* =========================================================
+/* =========================
+   BULLETS
+========================= */
+
+function fireBullet() {
+
+    if (fireTimer > 0) {
+        return;
+    }
+
+    fireTimer = ship.fireDelay;
+
+    let vx = 300;
+    let vy = 0;
+
+    if (autoAim) {
+
+        const target = findNearestAsteroid();
+
+        if (target) {
+
+            const dx = target.x - ship.x;
+            const dy = target.y - ship.y;
+
+            const length =
+                Math.sqrt(dx * dx + dy * dy) || 1;
+
+            vx = (dx / length) * 320;
+            vy = (dy / length) * 320;
+        }
+    }
+
+    bullets.push({
+        x: ship.x + 23,
+        y: ship.y,
+        vx,
+        vy,
+        life: 2
+    });
+}
+
+function drawBullet(b) {
+
+    ctx.fillStyle = "#fff5a0";
+
+    ctx.fillRect(
+        Math.round(b.x),
+        Math.round(b.y),
+        5,
+        2
+    );
+
+    ctx.fillStyle = "#ffffff";
+
+    ctx.fillRect(
+        Math.round(b.x - 2),
+        Math.round(b.y),
+        2,
+        2
+    );
+}
+
+/* =========================
+   AUTO AIM
+========================= */
+
+function findNearestAsteroid() {
+
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    for (const a of asteroids) {
+
+        if (a.x < ship.x - 10) {
+            continue;
+        }
+
+        const dx = a.x - ship.x;
+        const dy = a.y - ship.y;
+
+        const distance =
+            dx * dx + dy * dy;
+
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearest = a;
+        }
+    }
+
+    return nearest;
+}
+
+/* =========================
    PARTICLES
-========================================================= */
+========================= */
 
 function createParticles(
     x,
     y,
-    color,
-    amount
+    count,
+    type = "normal"
 ) {
 
-    for (let i = 0; i < amount; i++) {
+    for (let i = 0; i < count; i++) {
 
         particles.push({
-
             x,
             y,
-
-            vx: random(-80, 80),
-            vy: random(-80, 80),
-
-            life: random(.2, .6),
-
-            maxLife: .6,
-
-            size: random(1, 3),
-
-            color
+            vx: random(-100, 100),
+            vy: random(-100, 100),
+            life: random(0.3, 0.7),
+            size: randomInt(1, 3),
+            type
         });
     }
 }
 
-function updateParticles(dt) {
+function drawParticle(p) {
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-
-        const p = particles[i];
-
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-
-        p.life -= dt;
-
-        if (p.life <= 0) {
-
-            particles.splice(i, 1);
-        }
-    }
-}
-
-function drawParticles() {
-
-    for (const p of particles) {
-
-        ctx.globalAlpha =
-            Math.max(0, p.life / p.maxLife);
-
-        ctx.fillStyle = p.color;
-
-        ctx.fillRect(
-            Math.floor(p.x),
-            Math.floor(p.y),
-            Math.ceil(p.size),
-            Math.ceil(p.size)
-        );
+    if (p.type === "shield") {
+        ctx.fillStyle = "#61e8ff";
+    } else {
+        ctx.fillStyle = "#ffcc55";
     }
 
-    ctx.globalAlpha = 1;
+    ctx.fillRect(
+        Math.round(p.x),
+        Math.round(p.y),
+        p.size,
+        p.size
+    );
 }
 
-/* =========================================================
+/* =========================
    COLLISION
-========================================================= */
+========================= */
 
-function collisionCircle(
+function circleCollision(
     x1,
     y1,
     r1,
@@ -1521,89 +1284,72 @@ function collisionCircle(
     const dx = x1 - x2;
     const dy = y1 - y2;
 
-    const distance =
-        Math.sqrt(dx * dx + dy * dy);
-
-    return distance < r1 + r2;
+    return (
+        dx * dx + dy * dy <=
+        (r1 + r2) * (r1 + r2)
+    );
 }
 
-/* =========================================================
-   BULLET / ASTEROID COLLISIONS
-========================================================= */
-
-function checkBulletCollisions() {
-
-    for (
-        let b = bullets.length - 1;
-        b >= 0;
-        b--
-    ) {
-
-        const bullet = bullets[b];
-
-        for (
-            let a = asteroids.length - 1;
-            a >= 0;
-            a--
-        ) {
-
-            const asteroid =
-                asteroids[a];
-
-            if (
-                collisionCircle(
-                    bullet.x,
-                    bullet.y,
-                    4,
-                    asteroid.x,
-                    asteroid.y,
-                    asteroid.radius
-                )
-            ) {
-
-                createParticles(
-                    asteroid.x,
-                    asteroid.y,
-                    "#ff9c58",
-                    16
-                );
-
-                score += 5;
-
-                bullets.splice(b, 1);
-                asteroids.splice(a, 1);
-
-                updateHUD();
-
-                break;
-            }
-        }
-    }
-}
-
-/* =========================================================
-   ASTEROID / SHIP HIT
-========================================================= */
+/* =========================
+   ASTEROID HIT
+========================= */
 
 function hitAsteroid(index) {
 
-    if (invulnerabilityTimer > 0) {
+    const a = asteroids[index];
+
+    if (!a) {
         return;
     }
+
+    /*
+        ЩИТ:
+
+        При столкновении:
+        - жизнь НЕ теряется;
+        - щит НЕ исчезает;
+        - shieldTimer НЕ меняется;
+        - астероид уничтожается;
+        - следующие столкновения тоже будут защищены,
+          пока не закончится исходные 5 секунд.
+    */
 
     if (shieldTimer > 0) {
 
         createParticles(
-            ship.x,
-            ship.y,
-            "#5ce5ff",
-            20
+            a.x,
+            a.y,
+            18,
+            "shield"
         );
 
-        shieldTimer = 0;
+        asteroids.splice(index, 1);
+
+        /*
+            Небольшая защита от повторной обработки
+            этого же столкновения.
+            Сам таймер щита НЕ трогаем.
+        */
+
+        invulnerabilityTimer = 0.15;
 
         updateHUD();
 
+        return;
+    }
+
+    /* обычное столкновение */
+
+    createParticles(
+        a.x,
+        a.y,
+        12,
+        "normal"
+    );
+
+    asteroids.splice(index, 1);
+
+    if (invulnerabilityTimer > 0) {
         return;
     }
 
@@ -1611,110 +1357,339 @@ function hitAsteroid(index) {
 
     invulnerabilityTimer = 1.2;
 
-    createParticles(
-        ship.x,
-        ship.y,
-        "#ff5b5b",
-        25
-    );
-
-    asteroids.splice(index, 1);
-
     updateHUD();
 
     if (lives <= 0) {
-
-        endGame();
+        showGameOver();
     }
 }
 
-/* =========================================================
-   AUTO AIM
-========================================================= */
-
-function getNearestAsteroid() {
-
-    let nearest = null;
-    let nearestDistance = Infinity;
-
-    for (const asteroid of asteroids) {
-
-        if (asteroid.x < ship.x) {
-            continue;
-        }
-
-        const dx =
-            asteroid.x - ship.x;
-
-        const dy =
-            asteroid.y - ship.y;
-
-        const distance =
-            dx * dx + dy * dy;
-
-        if (distance < nearestDistance) {
-
-            nearestDistance = distance;
-            nearest = asteroid;
-        }
-    }
-
-    return nearest;
-}
-
-/* =========================================================
-   SHIP MOVEMENT
-========================================================= */
+/* =========================
+   UPDATE SHIP
+========================= */
 
 function updateShip(dt) {
 
     let direction = 0;
 
-    if (ship.movingUp) {
+    if (keys.up) {
         direction -= 1;
     }
 
-    if (ship.movingDown) {
+    if (keys.down) {
         direction += 1;
     }
 
-    const currentSpeed =
-        ship.speed *
-        (speedBoostTimer > 0 ? 1.75 : 1);
+    const speedMultiplier =
+        speedTimer > 0 ? 1.75 : 1;
 
     ship.y +=
         direction *
-        currentSpeed *
+        ship.speed *
+        speedMultiplier *
         dt;
 
-    const margin = 18;
-
-    if (ship.y < margin) {
-        ship.y = margin;
+    if (ship.y < 15) {
+        ship.y = 15;
     }
 
-    if (ship.y > H - margin) {
-        ship.y = H - margin;
+    if (ship.y > H - 15) {
+        ship.y = H - 15;
+    }
+
+    speedAnimationTime += dt;
+}
+
+/* =========================
+   UPDATE BULLETS
+========================= */
+
+function updateBullets(dt) {
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+
+        const b = bullets[i];
+
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+
+        b.life -= dt;
+
+        let destroyed = false;
+
+        for (let j = asteroids.length - 1; j >= 0; j--) {
+
+            const a = asteroids[j];
+
+            if (
+                circleCollision(
+                    b.x,
+                    b.y,
+                    3,
+                    a.x,
+                    a.y,
+                    a.radius
+                )
+            ) {
+
+                createParticles(
+                    a.x,
+                    a.y,
+                    10,
+                    "normal"
+                );
+
+                asteroids.splice(j, 1);
+                bullets.splice(i, 1);
+
+                score += 10;
+
+                destroyed = true;
+
+                break;
+            }
+        }
+
+        if (destroyed) {
+            continue;
+        }
+
+        if (
+            b.life <= 0 ||
+            b.x > W + 20 ||
+            b.x < -20 ||
+            b.y < -20 ||
+            b.y > H + 20
+        ) {
+            bullets.splice(i, 1);
+        }
     }
 }
 
-/* =========================================================
-   GAME UPDATE
-========================================================= */
+/* =========================
+   UPDATE ASTEROIDS
+========================= */
 
-function update(dt) {
+function updateAsteroids(dt) {
 
-    if (!gameRunning || paused) {
-        return;
+    for (let i = asteroids.length - 1; i >= 0; i--) {
+
+        const a = asteroids[i];
+
+        a.x -= a.speed * dt;
+
+        a.rotation +=
+            a.rotationSpeed * dt;
+
+        if (
+            circleCollision(
+                ship.x,
+                ship.y,
+                11,
+                a.x,
+                a.y,
+                a.radius
+            )
+        ) {
+
+            hitAsteroid(i);
+
+            continue;
+        }
+
+        if (a.x < -50) {
+            asteroids.splice(i, 1);
+        }
+    }
+}
+
+/* =========================
+   UPDATE COINS
+========================= */
+
+function updateCoins(dt) {
+
+    for (let i = coins.length - 1; i >= 0; i--) {
+
+        const c = coins[i];
+
+        c.x -= c.speed * dt;
+
+        c.rotation +=
+            c.rotationSpeed * dt;
+
+        if (
+            circleCollision(
+                ship.x,
+                ship.y,
+                12,
+                c.x,
+                c.y,
+                c.radius
+            )
+        {
+
+            score += 25;
+
+            createParticles(
+                c.x,
+                c.y,
+                8,
+                "normal"
+            );
+
+            coins.splice(i, 1);
+
+            continue;
+        }
+
+        if (c.x < -20) {
+            coins.splice(i, 1);
+        }
+    }
+}
+
+/* =========================
+   UPDATE POWERUPS
+========================= */
+
+function updatePowerups(dt) {
+
+    for (let i = powerups.length - 1; i >= 0; i--) {
+
+        const p = powerups[i];
+
+        p.x -= p.speed * dt;
+
+        if (
+            circleCollision(
+                ship.x,
+                ship.y,
+                13,
+                p.x,
+                p.y,
+                11
+            )
+        {
+
+            if (p.type === "shield") {
+
+                /*
+                    Щит ВСЕГДА получает новые полные 5 секунд.
+                */
+
+                shieldTimer = 5;
+
+                createParticles(
+                    p.x,
+                    p.y,
+                    15,
+                    "shield"
+                );
+
+            } else {
+
+                /*
+                    Скорость получает полные 5 секунд.
+                */
+
+                speedTimer = 5;
+
+                createParticles(
+                    p.x,
+                    p.y,
+                    15,
+                    "normal"
+                );
+            }
+
+            powerups.splice(i, 1);
+
+            updateHUD();
+
+            continue;
+        }
+
+        if (p.x < -25) {
+            powerups.splice(i, 1);
+        }
+    }
+}
+
+/* =========================
+   UPDATE PARTICLES
+========================= */
+
+function updateParticles(dt) {
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+
+        const p = particles[i];
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        p.vx *= 0.97;
+        p.vy *= 0.97;
+
+        p.life -= dt;
+
+        if (p.life <= 0) {
+            particles.splice(i, 1);
+        }
+    }
+}
+
+/* =========================
+   UPDATE STARS
+========================= */
+
+function updateStars(dt) {
+
+    for (const s of stars) {
+
+        s.x -= s.speed * dt;
+
+        if (s.x < 0) {
+
+            s.x = W;
+
+            s.y = random(0, H);
+        }
+    }
+}
+
+function drawStars() {
+
+    for (const s of stars) {
+
+        ctx.globalAlpha = s.brightness;
+
+        ctx.fillStyle = "#ffffff";
+
+        ctx.fillRect(
+            Math.round(s.x),
+            Math.round(s.y),
+            s.size,
+            s.size
+        );
     }
 
-    if (speedBoostTimer > 0) {
+    ctx.globalAlpha = 1;
+}
 
-        speedBoostTimer -= dt;
+/* =========================
+   TIMERS
+========================= */
 
-        if (speedBoostTimer < 0) {
-            speedBoostTimer = 0;
-        }
+function updateTimers(dt) {
+
+    if (fireTimer > 0) {
+        fireTimer -= dt;
+    }
+
+    if (invulnerabilityTimer > 0) {
+        invulnerabilityTimer -= dt;
     }
 
     if (shieldTimer > 0) {
@@ -1726,408 +1701,252 @@ function update(dt) {
         }
     }
 
-    if (invulnerabilityTimer > 0) {
+    if (speedTimer > 0) {
 
-        invulnerabilityTimer -= dt;
+        speedTimer -= dt;
 
-        if (invulnerabilityTimer < 0) {
-            invulnerabilityTimer = 0;
-        }
-    }
-
-    if (fireCooldown > 0) {
-        fireCooldown -= dt;
-    }
-
-    difficulty += dt * .025;
-
-    updateShip(dt);
-
-    updateBullets(dt);
-    updateAsteroids(dt);
-    updateCoins(dt);
-    updatePowerups(dt);
-    updateParticles(dt);
-
-    checkBulletCollisions();
-
-    asteroidTimer += dt;
-    coinTimer += dt;
-    powerTimer += dt;
-
-    const asteroidInterval =
-        Math.max(
-            .45,
-            1.15 - difficulty * .025
-        );
-
-    if (asteroidTimer >= asteroidInterval) {
-
-        asteroidTimer = 0;
-
-        createAsteroid();
-    }
-
-    if (coinTimer >= 1.7) {
-
-        coinTimer = 0;
-
-        createCoin();
-    }
-
-    if (powerTimer >= 7) {
-
-        powerTimer = 0;
-
-        if (Math.random() < .65) {
-            createPowerup();
+        if (speedTimer < 0) {
+            speedTimer = 0;
         }
     }
 
     updateHUD();
 }
 
-/* =========================================================
-   DRAW
-========================================================= */
+/* =========================
+   SPAWN SYSTEM
+========================= */
 
-function draw() {
+function updateSpawning(dt) {
 
-    drawBackground(0);
+    spawnTimer -= dt;
 
-    drawPowerups();
-    drawCoins();
-    drawAsteroids();
-    drawBullets();
-    drawParticles();
+    if (spawnTimer <= 0) {
 
-    /*
-       Когда корабль получает урон,
-       он мигает.
-    */
+        spawnAsteroid();
 
-    if (
-        invulnerabilityTimer <= 0 ||
-        Math.floor(invulnerabilityTimer * 10) % 2 === 0
-    ) {
+        spawnTimer =
+            random(0.55, 1.15);
+    }
 
-        drawShip();
+    coinTimer -= dt;
+
+    if (coinTimer <= 0) {
+
+        spawnCoin();
+
+        coinTimer =
+            random(2.2, 4.2);
+    }
+
+    powerupTimer -= dt;
+
+    if (powerupTimer <= 0) {
+
+        spawnPowerup();
+
+        powerupTimer =
+            random(6, 11);
     }
 }
 
-function drawCoins() {
+/* =========================
+   DRAW EVERYTHING
+========================= */
 
-    for (const coin of coins) {
-        drawCoin(coin);
+function drawGame() {
+
+    ctx.clearRect(0, 0, W, H);
+
+    /* background */
+
+    ctx.fillStyle = "#02030a";
+    ctx.fillRect(0, 0, W, H);
+
+    drawStars();
+
+    /* asteroids */
+
+    for (const a of asteroids) {
+        drawAsteroid(a);
     }
+
+    /* coins */
+
+    for (const c of coins) {
+        drawCoin(c);
+    }
+
+    /* powerups */
+
+    for (const p of powerups) {
+        drawPowerup(p);
+    }
+
+    /* bullets */
+
+    for (const b of bullets) {
+        drawBullet(b);
+    }
+
+    /* particles */
+
+    for (const p of particles) {
+        drawParticle(p);
+    }
+
+    /* ship */
+
+    drawShip();
 }
 
-/* =========================================================
+/* =========================
    MAIN LOOP
-========================================================= */
+========================= */
 
 function gameLoop(timestamp) {
+
+    if (!gameRunning) {
+        return;
+    }
+
+    if (!lastTime) {
+        lastTime = timestamp;
+    }
 
     let dt =
         (timestamp - lastTime) / 1000;
 
     lastTime = timestamp;
 
-    if (dt > .05) {
-        dt = .05;
+    dt = Math.min(dt, 0.04);
+
+    if (!paused) {
+
+        updateTimers(dt);
+        updateShip(dt);
+        updateBullets(dt);
+        updateAsteroids(dt);
+        updateCoins(dt);
+        updatePowerups(dt);
+        updateParticles(dt);
+        updateStars(dt);
+        updateSpawning(dt);
+
+        if (keys.fire) {
+            fireBullet();
+        }
+
     }
 
-    update(dt);
-    draw();
+    drawGame();
 
     requestAnimationFrame(gameLoop);
 }
 
-/* =========================================================
-   HUD
-========================================================= */
-
-function updateHUD() {
-
-    livesElement.textContent =
-        "❤️".repeat(Math.max(0, lives));
-
-    scoreElement.textContent =
-        score;
-
-    if (speedBoostTimer > 0) {
-
-        speedStatus.style.display =
-            "inline-block";
-
-        speedTimerElement.textContent =
-            Math.ceil(speedBoostTimer);
-
-    } else {
-
-        speedStatus.style.display =
-            "none";
-    }
-
-    if (shieldTimer > 0) {
-
-        shieldStatus.style.display =
-            "inline-block";
-
-        shieldTimerElement.textContent =
-            Math.ceil(shieldTimer);
-
-    } else {
-
-        shieldStatus.style.display =
-            "none";
-    }
-
-    if (autoAim) {
-
-        aimStatus.style.display =
-            "inline-block";
-
-    } else {
-
-        aimStatus.style.display =
-            "none";
-    }
-}
-
-/* =========================================================
-   START GAME
-========================================================= */
+/* =========================
+   START
+========================= */
 
 function startGame() {
 
-    menu.classList.add("hidden");
-    gameOver.classList.add("hidden");
-    pauseMenu.classList.add("hidden");
+    resetGame();
 
     gameRunning = true;
     paused = false;
 
-    score = 0;
-    lives = 3;
+    startOverlay.classList.add("hidden");
+    pauseOverlay.classList.add("hidden");
+    gameOverOverlay.classList.add("hidden");
 
-    difficulty = 1;
+    lastTime = performance.now();
 
-    asteroidTimer = 0;
-    coinTimer = 0;
-    powerTimer = 0;
-
-    speedBoostTimer = 0;
-    shieldTimer = 0;
-
-    invulnerabilityTimer = 0;
-    fireCooldown = 0;
-
-    autoAim = false;
-
-    ship.x = 70;
-    ship.y = H / 2;
-
-    asteroids.length = 0;
-    bullets.length = 0;
-    coins.length = 0;
-    powerups.length = 0;
-    particles.length = 0;
-
-    updateHUD();
+    requestAnimationFrame(gameLoop);
 }
 
-/* =========================================================
-   END GAME
-========================================================= */
-
-function endGame() {
-
-    gameRunning = false;
-    paused = false;
-
-    finalScoreElement.textContent =
-        "SCORE: " + score;
-
-    gameOver.classList.remove("hidden");
-}
-
-/* =========================================================
+/* =========================
    PAUSE
-========================================================= */
+========================= */
 
-function togglePause() {
+function pauseGame() {
 
     if (!gameRunning) {
         return;
     }
 
-    paused = !paused;
+    paused = true;
 
-    if (paused) {
-
-        pauseMenu.classList.remove("hidden");
-
-    } else {
-
-        pauseMenu.classList.add("hidden");
-
-        cheatInput.blur();
-    }
+    pauseOverlay.classList.remove("hidden");
 }
 
-/* =========================================================
-   RETURN TO MENU
-========================================================= */
+function resumeGame() {
 
-function returnToMenu() {
+    if (!gameRunning) {
+        return;
+    }
+
+    paused = false;
+
+    pauseOverlay.classList.add("hidden");
+
+    lastTime = performance.now();
+}
+
+/* =========================
+   GAME OVER
+========================= */
+
+function showGameOver() {
 
     gameRunning = false;
     paused = false;
 
-    pauseMenu.classList.add("hidden");
-    gameOver.classList.add("hidden");
-    menu.classList.remove("hidden");
+    keys.up = false;
+    keys.down = false;
+    keys.fire = false;
 
-    autoAim = false;
+    finalScore.textContent =
+        "SCORE: " + score;
 
-    updateHUD();
+    gameOverOverlay.classList.remove("hidden");
 }
 
-/* =========================================================
-   CHEAT CODE
-========================================================= */
+/* =========================
+   CHEAT
+========================= */
 
 function activateCheat() {
 
     const code =
-        cheatInput.value
-            .trim()
-            .toUpperCase();
+        cheatInput.value.trim().toUpperCase();
 
     if (code === "ASTRO-AIM") {
 
         autoAim = true;
 
         cheatMessage.textContent =
-            "✓ AUTO AIM АКТИВИРОВАН";
+            "AUTO-AIM ACTIVATED";
 
-        cheatInput.value = "";
-
-        updateHUD();
+        cheatMessage.style.color =
+            "#55ff77";
 
     } else {
 
         cheatMessage.textContent =
-            "✕ НЕВЕРНЫЙ ЧИТ-КОД";
+            "UNKNOWN CHEAT";
+
+        cheatMessage.style.color =
+            "#ff5555";
     }
 }
 
-/* =========================================================
-   BUTTON SETUP
-========================================================= */
-
-function setupHoldButton(
-    element,
-    onStart,
-    onEnd
-) {
-
-    element.addEventListener(
-        "pointerdown",
-        event => {
-
-            event.preventDefault();
-
-            onStart();
-
-            try {
-                element.setPointerCapture(
-                    event.pointerId
-                );
-            } catch (_) {}
-        }
-    );
-
-    element.addEventListener(
-        "pointerup",
-        event => {
-
-            event.preventDefault();
-
-            onEnd();
-        }
-    );
-
-    element.addEventListener(
-        "pointercancel",
-        onEnd
-    );
-
-    element.addEventListener(
-        "pointerleave",
-        event => {
-
-            if (
-                event.buttons === 0
-            ) {
-                onEnd();
-            }
-        }
-    );
-}
-
-setupHoldButton(
-    document.getElementById("upButton"),
-
-    () => {
-        ship.movingUp = true;
-    },
-
-    () => {
-        ship.movingUp = false;
-    }
-);
-
-setupHoldButton(
-    document.getElementById("downButton"),
-
-    () => {
-        ship.movingDown = true;
-    },
-
-    () => {
-        ship.movingDown = false;
-    }
-);
-
-setupHoldButton(
-    document.getElementById("fireButton"),
-
-    () => {
-        shoot();
-    },
-
-    () => {}
-);
-
-/* =========================================================
+/* =========================
    BUTTON EVENTS
-========================================================= */
+========================= */
 
 startButton.addEventListener(
     "click",
     startGame
-);
-
-pauseButton.addEventListener(
-    "click",
-    togglePause
-);
-
-resumeButton.addEventListener(
-    "click",
-    togglePause
 );
 
 restartButton.addEventListener(
@@ -2135,111 +1954,169 @@ restartButton.addEventListener(
     startGame
 );
 
-restartPauseButton.addEventListener(
+pauseButton.addEventListener(
     "click",
-    startGame
+    pauseGame
 );
 
-menuButton.addEventListener(
+resumeButton.addEventListener(
     "click",
-    returnToMenu
+    resumeGame
 );
 
-menuButtonFromPause.addEventListener(
-    "click",
-    returnToMenu
-);
-
-cheatButton.addEventListener(
+activateCheatButton.addEventListener(
     "click",
     activateCheat
 );
 
-cheatInput.addEventListener(
-    "keydown",
-    event => {
+/* =========================
+   TOUCH / POINTER CONTROLS
+========================= */
 
-        if (event.key === "Enter") {
-            activateCheat();
+function bindHoldButton(button, key) {
+
+    button.addEventListener(
+        "pointerdown",
+        function(e) {
+
+            e.preventDefault();
+
+            keys[key] = true;
+
+            try {
+                button.setPointerCapture(e.pointerId);
+            } catch (_) {}
         }
-    }
-);
+    );
 
-/* =========================================================
-   KEYBOARD CONTROLS
-========================================================= */
+    const release = function(e) {
 
-document.addEventListener(
-    "keydown",
-    event => {
+        e.preventDefault();
 
-        if (event.key === "ArrowUp") {
+        keys[key] = false;
+    };
 
-            event.preventDefault();
+    button.addEventListener(
+        "pointerup",
+        release
+    );
 
-            ship.movingUp = true;
-        }
+    button.addEventListener(
+        "pointercancel",
+        release
+    );
 
-        if (event.key === "ArrowDown") {
+    button.addEventListener(
+        "pointerleave",
+        function(e) {
 
-            event.preventDefault();
-
-            ship.movingDown = true;
-        }
-
-        if (
-            event.key === " " ||
-            event.key === "Spacebar"
-        ) {
-
-            event.preventDefault();
-
-            shoot();
-        }
-
-        if (
-            event.key === "Escape" ||
-            event.key.toLowerCase() === "p"
-        ) {
-
-            if (
-                gameRunning &&
-                document.activeElement !== cheatInput
-            ) {
-
-                togglePause();
+            if (e.buttons === 0) {
+                keys[key] = false;
             }
         }
+    );
+}
+
+bindHoldButton(upButton, "up");
+bindHoldButton(downButton, "down");
+bindHoldButton(fireButton, "fire");
+
+/* =========================
+   KEYBOARD
+========================= */
+
+window.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (
+            e.key === "ArrowUp" ||
+            e.key.toLowerCase() === "w"
+        ) {
+            keys.up = true;
+            e.preventDefault();
+        }
+
+        if (
+            e.key === "ArrowDown" ||
+            e.key.toLowerCase() === "s"
+        ) {
+            keys.down = true;
+            e.preventDefault();
+        }
+
+        if (
+            e.key === " " ||
+            e.key.toLowerCase() === "f"
+        ) {
+            keys.fire = true;
+            e.preventDefault();
+        }
+
+        if (
+            e.key === "Escape" ||
+            e.key.toLowerCase() === "p"
+        ) {
+
+            if (paused) {
+                resumeGame();
+            } else {
+                pauseGame();
+            }
+
+            e.preventDefault();
+        }
     }
 );
+
+window.addEventListener(
+    "keyup",
+    function(e) {
+
+        if (
+            e.key === "ArrowUp" ||
+            e.key.toLowerCase() === "w"
+        ) {
+            keys.up = false;
+        }
+
+        if (
+            e.key === "ArrowDown" ||
+            e.key.toLowerCase() === "s"
+        ) {
+            keys.down = false;
+        }
+
+        if (
+            e.key === " " ||
+            e.key.toLowerCase() === "f"
+        ) {
+            keys.fire = false;
+        }
+    }
+);
+
+/* =========================
+   PREVENT LONG PRESS
+========================= */
 
 document.addEventListener(
-    "keyup",
-    event => {
+    "contextmenu",
+    function(e) {
 
-        if (event.key === "ArrowUp") {
-            ship.movingUp = false;
-        }
-
-        if (event.key === "ArrowDown") {
-            ship.movingDown = false;
+        if (e.target !== cheatInput) {
+            e.preventDefault();
         }
     }
 );
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
+/* =========================
+   INITIALIZE
+========================= */
 
 createStars();
+resetGame();
 
-updateHUD();
-
-draw();
-
-requestAnimationFrame(
-    gameLoop
-);
 </script>
 
 </body>
